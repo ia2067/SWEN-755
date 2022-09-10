@@ -1,4 +1,5 @@
-#include <thread>
+// #include <thread>
+#include <boost/thread.hpp>
 #include <memory>
 
 class HelloWorldPrinter
@@ -13,6 +14,6 @@ public: // Methods
     void end();
 
 private:
-    std::shared_ptr<std::thread> _thread;
+    std::shared_ptr<boost::thread> _thread;
     int _counter;
 };

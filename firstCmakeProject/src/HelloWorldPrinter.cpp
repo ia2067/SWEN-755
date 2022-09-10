@@ -15,6 +15,7 @@ void HelloWorldPrinter::print()
     {
         std::cout << _counter << std::endl;
         _counter--;
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(250));
     }
     std::cout << "Hello World!" << std::endl;
 }
@@ -22,7 +23,7 @@ void HelloWorldPrinter::print()
 void HelloWorldPrinter::start()
 {
     // Lambda pointing to print function
-    _thread = std::make_shared<std::thread>( [this] { this->print(); } );
+    _thread = std::make_shared<boost::thread>( [this] { this->print(); } );
 }
 
 void HelloWorldPrinter::end()

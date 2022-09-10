@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.5.0)
 project(HelloWorld VERSION 0.2.0)
 
 set(SOURCES
@@ -6,8 +5,19 @@ set(SOURCES
     src/main.cpp
 )
 
+# find boost libs for this specific project
+find_package(Boost 1.74.0 COMPONENTS thread chrono)
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+# install them
+if(Boost_FOUND)
+    message(STATUS "BOOST FOUND!")
+    include_directories(${Boost_INLUDE_DIRS})
+    add_executable(${PROJECT_NAME} ${SOURCES})
+    target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+else()
+    message(SEND_ERROR "BOOST NOT FOUND!")
+endif()
+
 
 target_include_directories( 
     ${PROJECT_NAME}
