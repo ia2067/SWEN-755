@@ -1,8 +1,14 @@
 project(HelloWorld VERSION 0.2.0)
 
-set(SOURCES
-    src/HelloWorldPrinter.cpp 
+set(main_exe_name ${PROJECT_NAME})
+set(main_SOURCES
     src/main.cpp
+)
+
+set(helper_exe_name ${PROJECT_NAME}_helper)
+set(helper_SOURCES
+    src/HelloWorldPrinter.cpp 
+    src/HelloWorld.cpp
 )
 
 # find boost libs for this specific project
@@ -12,15 +18,22 @@ find_package(Boost 1.74.0 COMPONENTS thread chrono)
 if(Boost_FOUND)
     message(STATUS "BOOST FOUND!")
     include_directories(${Boost_INLUDE_DIRS})
-    add_executable(${PROJECT_NAME} ${SOURCES})
-    target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+    # Create starting program
+    add_executable(${main_exe_name} ${main_SOURCES})
+    # add boost libs to it
+    target_link_libraries(${main_exe_name} ${Boost_LIBRARIES})
+
+    # Create helper program
+    add_executable(${helper_exe_name} ${helper_SOURCES})
+    # add boost libs to it too!
+    target_link_libraries(${helper_exe_name} ${Boost_LIBRARIES})
 else()
     message(SEND_ERROR "BOOST NOT FOUND!")
 endif()
 
 
 target_include_directories( 
-    ${PROJECT_NAME}
+    ${helper_exe_name}
     PRIVATE
     ${PROJECT_SOURCE_DIR}/include
 )
