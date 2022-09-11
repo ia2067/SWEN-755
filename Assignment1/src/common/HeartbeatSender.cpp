@@ -12,6 +12,13 @@ HeartbeatSender::HeartbeatSender(std::string messageQueueName,
   _sendingInterval(sendingInterval)
 { }
 
+HeartbeatSender::~HeartbeatSender()
+{   
+    // ensure thread is joined on destruction
+    if(_pThread)
+        _pThread->join();
+}
+
 
 
 std::string HeartbeatSender::getMessageQueueName()

@@ -12,7 +12,7 @@ class HeartbeatSender
 public:
     HeartbeatSender(std::string);
     HeartbeatSender(std::string, boost::chrono::milliseconds);
-    virtual ~HeartbeatSender() = default;
+    ~HeartbeatSender();
 
 public:
     /**
