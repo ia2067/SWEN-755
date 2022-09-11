@@ -4,6 +4,7 @@ project(Assignment1 VERSION 0.1.0)
 set(common_lib_name libcommon)
 set(common_SOURCES 
     src/common/HeartbeatSender.cpp
+    src/common/Thread.cpp
 )
 
 
