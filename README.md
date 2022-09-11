@@ -54,4 +54,4 @@ Using the CLI is actually very simple from here.
 ### firstCmakeProject
 This project is mostly a test-bed for playing with CMake for me. It can be used as an example for creating new projects, as time progresses I will add more and more to this 'hello world' project.
 
-Source can be found here: [Source](firstCmakeProject)
+Info and source Source can be found [here](firstCmakeProject).
