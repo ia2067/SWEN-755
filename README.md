@@ -16,6 +16,10 @@ Each folder represents a CMake 'project', for the time being all project is it's
 ### Environment
 I personally am using a Ubuntu Server 22.04 VM on my desktop as an environment for both building and running. Probably would be best to all use this, however not exactly necessary. I might experiment with [WSL](https://docs.microsoft.com/en-us/windows/wsl/about) later if time allows. There is CMake for Windows, however I have never used it, but it should all be cross platform.
 
+Required build tools:
+* build-essential
+* libboost-all-dev
+
 ### Setup
 1. (optional) Setup Github SSH keys
    
