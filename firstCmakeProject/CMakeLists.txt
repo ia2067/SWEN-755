@@ -11,8 +11,14 @@ set(helper_SOURCES
     src/HelloWorld.cpp
 )
 
+set(Boost_NeededLibs
+    thread 
+    chrono
+    program_options
+)
+
 # find boost libs for this specific project
-find_package(Boost 1.74.0 COMPONENTS thread chrono)
+find_package(Boost 1.74.0 COMPONENTS  ${Boost_NeededLibs})
 
 # install them
 if(Boost_FOUND)
