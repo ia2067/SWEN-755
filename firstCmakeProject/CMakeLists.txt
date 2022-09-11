@@ -22,7 +22,7 @@ find_package(Boost 1.74.0 COMPONENTS  ${Boost_NeededLibs})
 
 # install them
 if(Boost_FOUND)
-    message(STATUS "BOOST FOUND!")
+    message(STATUS "BOOST libs for ${PROJECT_NAME} found!")
     include_directories(${Boost_INLUDE_DIRS})
     # Create starting program
     add_executable(${main_exe_name} ${main_SOURCES})
@@ -41,5 +41,5 @@ endif()
 target_include_directories( 
     ${helper_exe_name}
     PRIVATE
-    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/include/
 )
