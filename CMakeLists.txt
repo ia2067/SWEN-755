@@ -27,3 +27,4 @@ set(CMAKE_CXX_STANDARD 11)
 
 
 add_subdirectory(firstCmakeProject)
+add_subdirectory(Assignment1)
