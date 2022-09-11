@@ -5,6 +5,7 @@ set(common_lib_name libcommon)
 set(common_SOURCES 
     src/common/HeartbeatSender.cpp
     src/common/Thread.cpp
+    src/common/HeartbeatMessage.cpp
 )
 
 
@@ -12,6 +13,7 @@ set(common_SOURCES
 set(Boost_CommonLibNeededLibs
     thread 
     chrono
+    serialization
 )
 
 # find boost libs for this specific project

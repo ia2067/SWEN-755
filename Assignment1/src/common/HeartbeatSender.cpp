@@ -1,4 +1,5 @@
 #include <common/HeartbeatSender.hpp>
+#include <common/HeartbeatMessage.hpp>
 
 #include <iostream>
 
@@ -11,12 +12,14 @@ namespace Common
 {
 
 //-----------------------------------------------------------------------------
-HeartbeatSender::HeartbeatSender(std::string messageQueueName)
-: HeartbeatSender(messageQueueName, bc::milliseconds(2000))
+HeartbeatSender::HeartbeatSender(std::string id, std::string messageQueueName)
+: HeartbeatSender(id, messageQueueName, bc::milliseconds(2000))
 { }
-HeartbeatSender::HeartbeatSender(std::string messageQueueName, 
+HeartbeatSender::HeartbeatSender(std::string id,
+                                 std::string messageQueueName, 
                                  bc::milliseconds sendingInterval)
 : _state(INIT),
+  _id(id),
   _messageQueueName(messageQueueName),
   _beatSegment(0),
   _sendingInterval(sendingInterval),
@@ -59,6 +62,30 @@ HeartbeatSender::State_e HeartbeatSender::_getState()
     std::lock_guard<std::mutex> lock(_mutex);
     return _state;
 }
+bool HeartbeatSender::_sendBeat()
+{
+    Common::HeartbeatMessage hbm(_id,
+                                 bc::system_clock::now());
+
+    std::ostringstream oss;
+    boost::archive::text_oarchive oa(oss);
+
+    oa << hbm;
+
+    std::string serialized_msg(oss.str());
+    char msg[serialized_msg.length()];
+    serialized_msg.copy(msg, serialized_msg.length());
+    auto timeout = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(1);
+
+    std::cout << "buh buh" << std::endl;
+    
+    if(!_pMQ->timed_send(msg, serialized_msg.length(), 1, timeout))
+    {
+        return false;
+    }
+    return true;
+}
+
 void HeartbeatSender::_run() 
 {
     do
@@ -75,6 +102,8 @@ void HeartbeatSender::_run()
         case BEATING:
             nextSleepTime = _beat();
             break;
+        case SEND_FAILED:
+            nextSleepTime = _beatSendFailed();
         case SHUTTING_DOWN:
             continue;
         default:
@@ -116,7 +145,14 @@ bc::milliseconds HeartbeatSender::_beat()
     if(_beatSegment >= NUM_BEAT_SEGMENTS)
     {
         _beatSegment = 0;
-        std::cout << "buh buh" << std::endl;
+        //
+        // do something to check we are alive
+        //
+        if(!_sendBeat())
+        {
+            _setState(SEND_FAILED);
+            return bc::milliseconds(0);
+        }
     }
     else
     {
@@ -125,6 +161,17 @@ bc::milliseconds HeartbeatSender::_beat()
 
     // dont want to be 'sleeping' when we are told to shutdown,
     // so lets break the interval up into 10 bits
+    return getSendingInterval() / NUM_BEAT_SEGMENTS;
+}
+boost::chrono::milliseconds HeartbeatSender::_beatSendFailed()
+{
+    if(!_sendBeat())
+    {
+        return bc::milliseconds(100);
+    }
+
+    // Success!
+    _setState(BEATING);
     return getSendingInterval() / NUM_BEAT_SEGMENTS;
 }
     
