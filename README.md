@@ -6,6 +6,7 @@
       - [CLI setup](#cli-setup)
   - [Projects](#projects)
     - [firstCmakeProject](#firstcmakeproject)
+    - [Assignment 1](#assignment-1)
 
 
 # SWEN-755 Softrware Architecture
@@ -59,3 +60,7 @@ Using the CLI is actually very simple from here.
 This project is mostly a test-bed for playing with CMake for me. It can be used as an example for creating new projects, as time progresses I will add more and more to this 'hello world' project.
 
 Info and source Source can be found [here](firstCmakeProject).
+
+### Assignment 1
+
+Info and source Source can be found [here](Assignment1).
