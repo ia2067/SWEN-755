@@ -1,5 +1,6 @@
 project(Assignment1 VERSION 0.1.0)
 
+set(CMAKE_CXX_FLAGS, "-lrt")
 # common library
 set(common_lib_name libcommon)
 set(common_SOURCES 
@@ -17,7 +18,7 @@ set(Boost_CommonLibNeededLibs
 )
 
 # find boost libs for this specific project
-find_package(Boost 1.74.0 COMPONENTS  ${Boost_CommonLibNeededLibs})
+find_package(Boost 1.71.0 COMPONENTS  ${Boost_CommonLibNeededLibs})
 
 # install them
 if(Boost_FOUND)
@@ -29,7 +30,7 @@ if(Boost_FOUND)
                 ${common_SOURCES}
     )
     # add boost libs to it
-    target_link_libraries(${common_lib_name} ${Boost_LIBRARIES})
+    target_link_libraries(${common_lib_name} ${Boost_LIBRARIES} rt)
 else()
     message(SEND_ERROR "BOOST NOT FOUND!")
 endif()
@@ -44,13 +45,14 @@ target_include_directories(
 
 set(main_exe_name ${PROJECT_NAME})
 set(main_SOURCES
+    src/Sensor.cpp
     src/main.cpp
 )
 
 
 add_executable(${main_exe_name} ${main_SOURCES})
 target_link_libraries(${main_exe_name}
-                      ${common_lib_name})
+                      ${common_lib_name} rt)
 
 target_include_directories(
     ${main_exe_name}

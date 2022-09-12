@@ -1,5 +1,7 @@
 project(HelloWorld VERSION 0.2.0)
 
+set(CMAKE_CXX_FLAGS, "-lrt")
+
 set(main_exe_name ${PROJECT_NAME})
 set(main_SOURCES
     src/main.cpp
@@ -18,7 +20,7 @@ set(Boost_NeededLibs
 )
 
 # find boost libs for this specific project
-find_package(Boost 1.74.0 COMPONENTS  ${Boost_NeededLibs})
+find_package(Boost 1.71.0 COMPONENTS  ${Boost_NeededLibs})
 
 # install them
 if(Boost_FOUND)
@@ -27,12 +29,12 @@ if(Boost_FOUND)
     # Create starting program
     add_executable(${main_exe_name} ${main_SOURCES})
     # add boost libs to it
-    target_link_libraries(${main_exe_name} ${Boost_LIBRARIES})
+    target_link_libraries(${main_exe_name} ${Boost_LIBRARIES} rt)
 
     # Create helper program
     add_executable(${helper_exe_name} ${helper_SOURCES})
     # add boost libs to it too!
-    target_link_libraries(${helper_exe_name} ${Boost_LIBRARIES})
+    target_link_libraries(${helper_exe_name} ${Boost_LIBRARIES} rt)
 else()
     message(SEND_ERROR "BOOST NOT FOUND!")
 endif()
