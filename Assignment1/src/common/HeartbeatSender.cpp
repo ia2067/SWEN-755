@@ -46,7 +46,7 @@ bc::milliseconds HeartbeatSender::getSendingInterval()
     std::lock_guard<std::mutex> lock(_mutex);
     return _sendingInterval;
 }
-void HeartbeatSender::getSendingInterval(bc::milliseconds sendingInterval)
+void HeartbeatSender::setSendingInterval(bc::milliseconds sendingInterval)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     _sendingInterval = sendingInterval;

@@ -7,6 +7,7 @@ set(common_SOURCES
     src/common/HeartbeatSender.cpp
     src/common/Thread.cpp
     src/common/HeartbeatMessage.cpp
+    src/common/HeartbeatReceiver.cpp
 )
 
 
