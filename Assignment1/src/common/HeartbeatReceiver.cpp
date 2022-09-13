@@ -53,6 +53,7 @@ void HeartbeatReceiver::setCheckInterval(bc::milliseconds checkInterval)
 //-----------------------------------------------------------------------------
 void HeartbeatReceiver::_setState(State_e state)
 {
+    // std::cout << "HBR::setState: " << state << std::endl;
     std::lock_guard<std::mutex> lock(_mutex);
     _state = state;
 }
@@ -73,20 +74,14 @@ void HeartbeatReceiver::addSenderId(std::string newSenderId)
     _lastBeats.insert(bp);
 }
 
-bool HeartbeatReceiver::isAlive(std::string id)
+std::set<std::string> HeartbeatReceiver::deadIds()
 {
-    return (_deadIds.count(id) == 0);
+    return _deadIds;
 }
-std::list<std::string> HeartbeatReceiver::deadIds()
+bc::system_clock::time_point HeartbeatReceiver::getLastBeat(std::string id)
 {
-    std::list<std::string> theDeadOnes;
-    for(auto deadPairs : _deadIds)
-    {
-        theDeadOnes.push_back(deadPairs.first);
-    }
-    return theDeadOnes;
+    return _lastBeats.at(id);
 }
-
 
 void HeartbeatReceiver::_run()
 {
@@ -141,7 +136,7 @@ boost::chrono::milliseconds HeartbeatReceiver::_createMQ()
     }
 
     _setState(LISTENING);
-    return bc::milliseconds(100);
+    return bc::milliseconds(0);
 
 }
 boost::chrono::milliseconds HeartbeatReceiver::_listen()
@@ -163,10 +158,9 @@ boost::chrono::milliseconds HeartbeatReceiver::_listen()
 
             ia >> rcvd_hbm;
 
-            std::time_t t = bc::system_clock::to_time_t(rcvd_hbm.getBeatTime());
-
-            // std::cout << "Got beat for " << rcvd_hbm.getId() << " @ " << std::ctime(&t) << std::endl;
-            _lastBeats[rcvd_hbm.getId()] = rcvd_hbm.getBeatTime();
+            std::string id = rcvd_hbm.getId();
+            bc::system_clock::time_point tp = rcvd_hbm.getBeatTime();
+            _lastBeats[id] = tp;
         }
         else
         {
@@ -175,26 +169,35 @@ boost::chrono::milliseconds HeartbeatReceiver::_listen()
     }
 
     _setState(CHECK_PULSES);
-    return getCheckInterval();
+    return bc::milliseconds(0);
 }
 
 boost::chrono::milliseconds HeartbeatReceiver::_checkPulses()
 {
     for(auto beatPair : _lastBeats)
     {
+        bool isDead = false;
         std::string id = beatPair.first;
-        bc::system_clock::time_point lb = beatPair.second;
 
-        bc::system_clock::time_point curr_time = bc::system_clock::now();
-        bc::system_clock::duration diff = curr_time - lb;
-        bc::milliseconds diff_ms = bc::duration_cast<bc::milliseconds>(diff);
-        if(diff_ms > getExpiredInterval())
+        bc::system_clock::duration diff = bc::system_clock::now() - beatPair.second;
+        double diff_ms = diff.count() / 1e6;
+        double expiredInterval_ms = getExpiredInterval().count();
+
+        isDead = (diff_ms > expiredInterval_ms);
+
+
+        if(isDead)
         {
-            // std::cout << "DEAD: " << id << " | " << bc::duration_cast<bc::seconds>(diff) << std::endl;
-            _deadIds[id] = diff_ms;
+
+            _deadIds.insert(id);
+        }
+        else
+        {
+            // std::cout << "erasing dead: " << id << std::endl;
+            _deadIds.erase(id);
         }
     }
     _setState(LISTENING);
-    return bc::milliseconds(0);
+    return getCheckInterval();
 }
 } // namespace Common

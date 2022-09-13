@@ -1,7 +1,12 @@
+
+
 #include <iostream>
-#include <common/HeartbeatSender.hpp>
-#include <common/HeartbeatMessage.hpp>
-#include <Sensor.hpp>
+#include <ctime>
+
+#include <common/HeartbeatReceiver.hpp>
+
+#include <boost/process.hpp>
+#include <boost/interprocess/ipc/message_queue.hpp>
 
 int main(int argc, char const *argv[])
 {
@@ -10,46 +15,37 @@ int main(int argc, char const *argv[])
     std::string mqn("myQueue");
     boost::interprocess::message_queue::remove(mqn.c_str());
 
-    Sensor mySensor(5, 0.5f);
-    mySensor.start();
+    namespace bp = boost::process;
+    bp::child primarySensorProcess("./sensorProcess --size 10 --scaleFactor 2.0 --mq myQueue --id primarySensor");
+    sleep(1);
+    bp::child secondarySensorProcess("./sensorProcess --size 10 --scaleFactor 2.0 --mq myQueue --id secondarySensor");
 
-    size_t bufSize  = 2 * sizeof(Common::HeartbeatMessage);
+    Common::HeartbeatReceiver hr(mqn, boost::chrono::milliseconds(50), boost::chrono::milliseconds(3000));
 
-    auto pMQ = std::make_shared<boost::interprocess::message_queue>(
-                        boost::interprocess::open_or_create,
-                        mqn.c_str(),
-                        100,
-                        bufSize);
-
-    char buf[bufSize];
-    size_t rcvd_size;
-    unsigned int pri;
-    auto timeout = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(1);
-    bool gotBeat = false;
-    if(pMQ)
-    {
-
-        do
-        {
-            // std::cout <<"Checking pulse..." << std::endl;
-            gotBeat = pMQ->timed_receive(buf,bufSize, rcvd_size, pri, timeout);
-        } while (!gotBeat);
-    }
-    else
-    {
-        std::cout << "no message queue????" << std::endl;
-        return -1;
-    }
-
-    Common::HeartbeatMessage rcvd_hbm;
-
-    std::istringstream iss(std::string(buf,bufSize));
-    boost::archive::text_iarchive ia(iss);
-
-    ia >> rcvd_hbm;
-
-    std::cout << "Got beat from " << rcvd_hbm.getId() << " @ " << rcvd_hbm.getBeatTime() << std::endl;
+    hr.start();
+    hr.addSenderId("primarySensor");
+    hr.addSenderId("secondarySensor");
     
-    mySensor.end();
+    sleep(60);
+
+    boost::chrono::system_clock::time_point current_time = boost::chrono::system_clock::now();
+    std::time_t tt = boost::chrono::system_clock::to_time_t(current_time);
+    std::cout << "------------------------------------" << std::endl;
+    std::cout << "current time: " << std::ctime(&tt);
+    std::cout << "------------------------------------" << std::endl;
+    for(auto dead : hr.deadIds())
+    {
+        std::cout << "        DEAD: " << dead << std::endl;
+        boost::chrono::system_clock::time_point tp(hr.getLastBeat(dead));
+        std::time_t tt = boost::chrono::system_clock::to_time_t(tp);
+        std::cout << "  last comms: " << std::ctime(&tt);
+        std::cout << "------------------------------------" << std::endl;
+    }
+
+    hr.end();
+    primarySensorProcess.terminate();
+    secondarySensorProcess.terminate();
+
+    boost::interprocess::message_queue::remove(mqn.c_str());
     return 0;
 }

@@ -2,6 +2,8 @@
 #define SENSOR_HPP
 
 #include <iostream>
+#include <mutex>
+
 #include <common/HeartbeatSender.hpp>
 
 class Sensor : public Common::Thread{
@@ -9,6 +11,7 @@ class Sensor : public Common::Thread{
 public:
     enum State_e {
         INIT,
+        PREFILL,
         MEASURE,
         FAILURE,
         DEAD
@@ -50,7 +53,7 @@ public:
      *
      * @return (float) scaled average measurement from all sensor samples.
      */
-    float measure(int center, int offset);
+    float measure();
 
 private:
     // common::thread
@@ -59,11 +62,16 @@ private:
     void _setState(State_e);
 
 private:
+    void _cacheSample(int);
+
+private:
     boost::chrono::milliseconds _init();
+    boost::chrono::milliseconds _prefill();
     boost::chrono::milliseconds _measure();
     boost::chrono::milliseconds _failure();
     
 private:
+    std::mutex _mutex;
     std::shared_ptr<Common::HeartbeatSender> _pHeartbeatSender;
 
     std::string id;
@@ -73,6 +81,8 @@ private:
 
     int sampleVal;
     float measureVal;
+
+    std::list<int> _prevSamples;
 
     int numRuns;
 };

@@ -54,6 +54,7 @@ void HeartbeatSender::setSendingInterval(bc::milliseconds sendingInterval)
 //-----------------------------------------------------------------------------
 void HeartbeatSender::_setState(State_e state)
 {
+    // std::cout << "HBS::State: " << state << std::endl;
     std::lock_guard<std::mutex> lock(_mutex);
     _state = state;
 }
@@ -77,7 +78,7 @@ bool HeartbeatSender::_sendBeat()
     serialized_msg.copy(msg, serialized_msg.length());
     auto timeout = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(1);
 
-    std::cout << "buh buh" << std::endl;
+    // std::cout << "buh buh" << std::endl;
     
     if(!_pMQ->timed_send(msg, serialized_msg.length(), 1, timeout))
     {
@@ -130,7 +131,7 @@ bc::milliseconds HeartbeatSender::_joinMQ()
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        // std::cerr << e.what() << '\n';
         // try again in 1/4 of a second
         return bc::milliseconds(250);
     }

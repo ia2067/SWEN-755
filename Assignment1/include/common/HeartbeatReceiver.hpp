@@ -41,8 +41,9 @@ namespace Common
     
     public:
         void addSenderId(std::string);
-        bool isAlive(std::string);
-        std::list<std::string> deadIds();
+        std::set<std::string> deadIds();
+        boost::chrono::system_clock::time_point getLastBeat(std::string);
+        
 
     private:
         void _setState(State_e);
@@ -64,7 +65,7 @@ namespace Common
         boost::chrono::milliseconds _checkInterval;
         boost::chrono::milliseconds _expiredInterval;
         std::map<std::string, boost::chrono::system_clock::time_point> _lastBeats;
-        std::map<std::string, boost::chrono::milliseconds> _deadIds; // ms is time since last beat
+        std::set<std::string> _deadIds;
         std::shared_ptr<boost::interprocess::message_queue> _pMQ;
     };
 } // namespace Common

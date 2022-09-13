@@ -31,18 +31,25 @@ int Sensor::sample(int center, int offset) {
     // Offset the measurement randomly in the range [-offset, offset].
     res += rand() % (2 * offset + 1) - offset;   // NOTE: rand() is 0 to RAND_MAX.
 
+    _cacheSample(res);
+
     return res;
 }
 
 
-float Sensor::measure(int center, int offset) {
+float Sensor::measure() {
     int rolling_sum = 0;
     float avg_sample = 0;
 
-    // Take number of samples with rolling sum to calc average.
-    for (int i = 0; i < Sensor::sample_size; i++) {
-        rolling_sum += Sensor::sample(center, offset);
+    {
+        std::lock_guard<std::mutex> lock(_mutex);
+        // Take number of previous samples with rolling sum to calc average.
+        for(auto samp : _prevSamples)
+        {
+            rolling_sum += samp;
+        }
     }
+
 
     // Get Average based on rolling sum.
     return rolling_sum / (float) Sensor::sample_size * Sensor::scaling_factor;
@@ -57,6 +64,15 @@ void Sensor::_setState(State_e state)
 {
     _state = state;
 }
+void Sensor::_cacheSample(int newSample)
+{
+    std::lock_guard<std::mutex> lock(_mutex);
+    _prevSamples.push_back(newSample);
+    while(_prevSamples.size() >= Sensor::sample_size)
+    {
+        _prevSamples.pop_front();
+    }
+}
 
 void Sensor::_run() {
     do
@@ -66,6 +82,9 @@ void Sensor::_run() {
         {
         case INIT:
             nextSleepTime = _init();
+            break;
+        case PREFILL:
+            nextSleepTime = _prefill();
             break;
         case MEASURE:
             nextSleepTime = _measure();
@@ -85,29 +104,46 @@ void Sensor::_run() {
 bc::milliseconds Sensor::_init()
 {
     _pHeartbeatSender->start();
+    _setState(PREFILL);
+    return bc::milliseconds(0);
+}
+
+boost::chrono::milliseconds Sensor::_prefill()
+{
+    for(int i = 0 ; i < Sensor::sample_size; i++)
+    {
+        sample(20,20);
+    }
+    
     _setState(MEASURE);
     return bc::milliseconds(0);
 }
 
 bc::milliseconds Sensor::_measure()
 {
-    sampleVal = sample(3, 10);
-    measureVal = measure(3, 10);
+    sampleVal = sample(20, 20);
+    measureVal = measure();
 
-    std::cout << "Sample Value: " << sampleVal << " Measure Value: " << measureVal << std::endl;
-    numRuns++;
+    // std::cout << "Sample Value: " << sampleVal << " Measure Value: " << measureVal << std::endl;
+    // numRuns++;
+    float percent_error = 0;
 
-    if(sampleVal == measureVal)
+    if(measureVal > 0)
+        percent_error = std::abs((sampleVal - measureVal)/ measureVal) * 100;
+
+    // std::cout << "\% err(" << Sensor::id << "): " << std::setprecision(5) <<  percent_error << std::endl;
+    if(percent_error >= 100)
     {
         _setState(FAILURE);
         return bc::milliseconds(0);
     }
-    return bc::milliseconds(0);
+    return bc::milliseconds(500);
 }
 
 bc::milliseconds Sensor::_failure()
 {
-    std::cout << "Num Runs: " << numRuns << std::endl;
+    // std::cout << "Num Runs: " << numRuns << std::endl;
+    std::cout << "SENSOR FAILURE: " << Sensor::id << std::endl;
     _pHeartbeatSender->end();
     _setState(DEAD);
     return bc::milliseconds(0);

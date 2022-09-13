@@ -34,7 +34,7 @@ int main(int argc, char const *argv[])
     Sensor sensor(size, scaleFactor, mq, id);
     sensor.start();
 
-    sleep(20);
+    while(true) {}
 
     sensor.end();
     return 0;
