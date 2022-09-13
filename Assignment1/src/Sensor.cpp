@@ -5,7 +5,8 @@
 namespace bc = boost::chrono;
 
 
-Sensor::Sensor(int sample_size, double scaling_factor, std::string id)
+Sensor::Sensor(int sample_size, float scaling_factor, 
+               std::string messageQueue, std::string id)
 : _pHeartbeatSender(nullptr),
   _state(INIT),
   sampleVal(0),
@@ -13,12 +14,13 @@ Sensor::Sensor(int sample_size, double scaling_factor, std::string id)
   numRuns(0)
 {
     srand(time(NULL));
-    
+
     Sensor::sample_size = sample_size;
     Sensor::scaling_factor = scaling_factor;
     Sensor::id = id;
+    Sensor::messageQueue = messageQueue;
 
-    _pHeartbeatSender = std::make_shared<Common::HeartbeatSender>(id, "hbSendQueue");
+    _pHeartbeatSender = std::make_shared<Common::HeartbeatSender>(id, messageQueue);
 }
 
 

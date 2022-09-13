@@ -19,16 +19,18 @@ public:
     int sample_size;
 
     // Scaling factor to apply to sensor measurements to get real result.
-    double scaling_factor;
+    float scaling_factor;
 
     /* 
      * @constructor.
      * 
      * @param: sample_size (int): Number of samples to average to get measurement.
-     * @param: scaling_factor (double): Factor to use when scaling sensor measurements.
+     * @param: scaling_factor (float): Factor to use when scaling sensor measurements.
+     * @param: messageQueue (string): String ID for our message queue.
      * @param: id (string): String ID for our heartbeat sender.
      */
-    Sensor(int sample_size, double scaling_factor, std::string id);
+    Sensor(int sample_size, float scaling_factor, 
+           std::string messageQueue, std::string id);
 
     /*
      * @brief: Take a single random sample (measurement) of the sensor.
@@ -50,13 +52,6 @@ public:
      */
     float measure(int center, int offset);
 
-
-
-    /**
-     * 
-     */
-    std::string GetID() { return id; }
-
 private:
     // common::thread
     void _run() override;
@@ -72,6 +67,7 @@ private:
     std::shared_ptr<Common::HeartbeatSender> _pHeartbeatSender;
 
     std::string id;
+    std::string messageQueue;
 
     State_e _state;
 
