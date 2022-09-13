@@ -1,6 +1,7 @@
 #include <iostream>
 #include <common/HeartbeatSender.hpp>
 #include <common/HeartbeatMessage.hpp>
+#include <Sensor.hpp>
 
 int main(int argc, char const *argv[])
 {
@@ -13,6 +14,8 @@ int main(int argc, char const *argv[])
 
     hs.start();
 
+    Sensor mySensor(5, 0.5f);
+
     size_t bufSize  = 2 * sizeof(Common::HeartbeatMessage);
 
     auto pMQ = std::make_shared<boost::interprocess::message_queue>(
@@ -20,6 +23,11 @@ int main(int argc, char const *argv[])
                         mqn.c_str(),
                         100,
                         bufSize);
+
+    // auto pSensor = std::make_shared<boost::interprocess::message_queue>(
+    //                     boost::interprocess::open_or_create,
+
+    // )
 
     char buf[bufSize];
     size_t rcvd_size;

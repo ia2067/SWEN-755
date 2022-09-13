@@ -1,6 +1,8 @@
 #ifndef SENSOR_H // Sensor.h includes guard.
 #define SENSOR_H
 
+#include <common/HeartbeatSender.hpp>
+
 class Sensor {
 public: 
     // Number of samples taken (and averaged) to get a measurement.
@@ -36,6 +38,14 @@ public:
      * @return (double) scaled average measurement from all sensor samples.
      */
     double measure(int center, int offset);
+
+    /**
+     * 
+     */
+    std::string GetID();
+
+private:
+    std::string id;
 };
 
 

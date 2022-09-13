@@ -1,10 +1,15 @@
 #include <stdlib.h>   //rand
-#include "Sensor.h"
+#include <Sensor.hpp>
 
 
 Sensor::Sensor(int sample_size, double scaling_factor) {
     Sensor::sample_size = sample_size;
     Sensor::scaling_factor = scaling_factor;
+    
+    id = "Sensor";
+    Common::HeartbeatSender sensorHeart("heartbeatSender", id, boost::chrono::milliseconds(3000));
+    boost::interprocess::message_queue::remove(id.c_str());
+    sensorHeart.start();
 }
 
 
@@ -30,4 +35,8 @@ double Sensor::measure(int center, int offset) {
 
     // Get Average based on rolling sum.
     return rolling_sum / (double) Sensor::sample_size * Sensor::scaling_factor;
+}
+
+std::string Sensor::GetID() {
+    return id;
 }
