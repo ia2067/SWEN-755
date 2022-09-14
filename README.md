@@ -21,6 +21,7 @@ Required build tools:
 * build-essential
 * libboost-all-dev
 * doxygen
+* graphviz
 
 ### Setup
 1. (optional) Setup Github SSH keys
