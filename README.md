@@ -20,6 +20,7 @@ I personally am using a Ubuntu Server 22.04 VM on my desktop as an environment f
 Required build tools:
 * build-essential
 * libboost-all-dev
+* doxygen
 
 ### Setup
 1. (optional) Setup Github SSH keys

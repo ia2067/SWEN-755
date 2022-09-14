@@ -6,20 +6,27 @@ This project I am mostly using to test.
 ```bash
 .
 ├── CMakeLists.txt
+├── docs
+│   └── Assignment1.doxygen
 ├── include
-│   └── common
-│       ├── HeartbeatMessage.hpp
-│       ├── HeartbeatSender.hpp
-│       └── Thread.hpp
+│   ├── common
+│   │   ├── HeartbeatMessage.hpp
+│   │   ├── HeartbeatReceiver.hpp
+│   │   ├── HeartbeatSender.hpp
+│   │   └── Thread.hpp
+│   └── Sensor.hpp
 ├── README.md
 └── src
     ├── common
     │   ├── HeartbeatMessage.cpp
+    │   ├── HeartbeatReceiver.cpp
     │   ├── HeartbeatSender.cpp
     │   └── Thread.cpp
-    └── main.cpp
+    ├── main.cpp
+    ├── Sensor.cpp
+    └── SensorProcess.cpp
 
-4 directories, 9 files
+5 directories, 15 files
 ```
 ## Whats happening
 This is the folder for Assignment 1.
