@@ -1,4 +1,4 @@
-- [SWEN-755 Softrware Architecture](#swen-755-softrware-architecture)
+- [SWEN-755 Software Architecture](#swen-755-software-architecture)
   - [How to use this repo](#how-to-use-this-repo)
     - [Environment](#environment)
     - [Setup](#setup)
@@ -9,7 +9,7 @@
     - [Assignment 1](#assignment-1)
 
 
-# SWEN-755 Softrware Architecture
+# SWEN-755 Software Architecture
 This repo is for Ian, Tyler and Dave to complete the SWEN-755 Software Architecture Projects. Most of the code will be C++ and compiled with CMake
 ## How to use this repo
 Each folder represents a CMake 'project', for the time being all project is it's own unique cmake project, where the toplevel simply pulls them all in. My prefered method of editing / building is with VSCode, however it should be possible to also use whatever IDE you want, but I will just outline how to setup VSCode and then also how to use a CLI, through linux or wsl or otherwise.
@@ -28,7 +28,7 @@ Required build tools:
 2.  Clone the code
 3.  Ensure the build tools are installed, we need `gcc`, `cmake` and `gdb`. 
    
-    They *should* be included with build-essentials (`sudo apt install build-essentials`) but you can check the versions of each to be sure they are there, and manually install each if necessary.
+    They *should* be included with build-essential (`sudo apt install build-essential`) but you can check the versions of each to be sure they are there, and manually install each if necessary.
 #### VSCode Setup
 Using VScode probably requires the most amount of initial setup but imo is very worth it. There are a lot of tools built in for source code navigation and debugging.
 1. Point a window of VSCode at the checked out code.
@@ -62,5 +62,7 @@ This project is mostly a test-bed for playing with CMake for me. It can be used 
 Info and source Source can be found [here](firstCmakeProject).
 
 ### Assignment 1
+This project implements heartbeat functionality for an autonomous car. 
+We implement a sensor process that contains basic functionality such as sampling and finding the rolling average. We implement two sensor processes that contain heartbeat senders, and one heartbeat receiver that listens for the keep-alive from these sensors. If the percent error of the sensors' rolling average is more than 100%, then we consider this as a failure point, and the sensor dies. The heartbeat receiver will then see that one of the sensors is no longer beating. Eventually we would like to see that we can implement fault recovery tactics and have the second sensor become synced up with the primary sensor and if/when the primary sensor fails, the fault monitor or overall controller will switch to listening to the secondary sensor.
 
 Info and source Source can be found [here](Assignment1).
