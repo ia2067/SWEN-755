@@ -85,3 +85,25 @@ target_include_directories(
     PRIVATE
     ${PROJECT_SOURCE_DIR}/include
 )
+
+
+option(BUILD_DOC "Build Documentation" ON)
+
+find_package(Doxygen
+             REQUIRED dot)
+
+if(Doxygen_FOUND)
+    set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/Assignment1.doxygen)
+    set(DOXYFILE ${CMAKE_CURRENT_BINARY_DIR}/doxyfile)
+
+    configure_file(${DOXYFILE_IN} 
+                   ${DOXYFILE} @ONLY)
+
+    message("Doxygen build started.")
+    message(${CMAKE_CURRENT_SOURCE_DIR})
+    add_custom_target(doc
+                      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_IN}
+                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs
+                      COMMENT "Generating API documentation With Doxygen"
+                      VERBATIM)
+endif(Doxygen_FOUND)
