@@ -1,5 +1,5 @@
-#include <common/HeartbeatReceiver.hpp>
-#include <common/HeartbeatMessage.hpp>
+#include <HeartbeatReceiver.hpp>
+#include <HeartbeatMessage.hpp>
 #include <iostream>
 
 namespace bip = boost::interprocess;

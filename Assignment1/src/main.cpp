@@ -3,7 +3,7 @@
 #include <iostream>
 #include <ctime>
 
-#include <common/HeartbeatReceiver.hpp>
+#include <HeartbeatReceiver.hpp>
 
 #include <boost/process.hpp>
 #include <boost/interprocess/ipc/message_queue.hpp>

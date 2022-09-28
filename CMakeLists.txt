@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.5.0)
 
+project(SWEN755 VERSION 1.0.0)
+
 if(CMAKE_CXX_COMPILER MATCHES "win32$" AND
    CMAKE_C_COMPILER MATCHES "win32$")
     set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/windows.cmake")
@@ -25,6 +27,6 @@ set(CMAKE_CXX_STANDARD 11)
 # set(Boost_USE_MULTITHREADED OFF)
 # set(Boost_USE_STATIC_RUNTIME OFF)
 
-
+add_subdirectory(common)
 add_subdirectory(firstCmakeProject)
 add_subdirectory(Assignment1)

@@ -1,46 +1,8 @@
 project(Assignment1 VERSION 1.0.0)
 
 set(CMAKE_CXX_FLAGS, "-lrt")
-# common library
-set(common_lib_name libcommon)
-set(common_SOURCES 
-    src/common/HeartbeatSender.cpp
-    src/common/Thread.cpp
-    src/common/HeartbeatMessage.cpp
-    src/common/HeartbeatReceiver.cpp
-)
 
-
-
-set(Boost_CommonLibNeededLibs
-    thread 
-    chrono
-    serialization
-)
-
-# find boost libs for this specific project
-find_package(Boost 1.71.0 COMPONENTS  ${Boost_CommonLibNeededLibs})
-
-# install them
-if(Boost_FOUND)
-    message(STATUS "BOOST libs for ${PROJECT_NAME}/${common_lib_name}  found!")
-    include_directories(${Boost_INCLUDE_DIRS})
-    # Create common library
-    add_library(${common_lib_name} 
-                STATIC 
-                ${common_SOURCES}
-    )
-    # add boost libs to it
-    target_link_libraries(${common_lib_name} ${Boost_LIBRARIES} rt)
-else()
-    message(SEND_ERROR "BOOST NOT FOUND!")
-endif()
-
-target_include_directories(
-    ${common_lib_name}
-    PRIVATE
-    ${PROJECT_SOURCE_DIR}/include
-)
+include_directories(${PROJECT_SOURCE_DIR}/../common/include)
 
 set(sensor_process_exe_name sensorProcess)
 set(sensor_process_SOURCES
@@ -56,11 +18,14 @@ find_package(Boost 1.71.0 COMPONENTS ${Boost_ProgramLibs})
 
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
-    add_executable(${sensor_process_exe_name} ${sensor_process_SOURCES})
-    target_link_libraries(${sensor_process_exe_name}
-                          ${common_lib_name})   
+
+    add_executable(${sensor_process_exe_name} 
+                   ${sensor_process_SOURCES})
+
     target_link_libraries(${sensor_process_exe_name}
                           ${Boost_LIBRARIES})
+    target_link_libraries(${sensor_process_exe_name}
+                          libcommon) 
 endif()
 
 target_include_directories(
@@ -78,7 +43,7 @@ set(main_SOURCES
 
 add_executable(${main_exe_name} ${main_SOURCES})
 target_link_libraries(${main_exe_name}
-                      ${common_lib_name})
+                      libcommon)
 
 target_include_directories(
     ${main_exe_name}

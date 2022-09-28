@@ -1,4 +1,4 @@
-#include <common/Thread.hpp>
+#include <Thread.hpp>
 #include <iostream>
 
 namespace Common
