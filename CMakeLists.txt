@@ -30,3 +30,25 @@ set(CMAKE_CXX_STANDARD 11)
 add_subdirectory(common)
 add_subdirectory(firstCmakeProject)
 add_subdirectory(Assignment1)
+
+
+option(BUILD_DOC "Build Documentation" ON)
+
+find_package(Doxygen
+             REQUIRED dot)
+
+if(Doxygen_FOUND)
+    set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen.in)
+    set(DOXYFILE ${CMAKE_CURRENT_BINARY_DIR}/doxyfile)
+
+    configure_file(${DOXYFILE_IN} 
+                   ${DOXYFILE} @ONLY)
+
+    message("Doxygen build started.")
+    message(${CMAKE_CURRENT_SOURCE_DIR})
+    add_custom_target(docs
+                      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_IN}
+                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs
+                      COMMENT "Generating API documentation With Doxygen"
+                      VERBATIM)
+endif(Doxygen_FOUND)
