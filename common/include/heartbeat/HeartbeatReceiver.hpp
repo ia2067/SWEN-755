@@ -3,9 +3,10 @@
 
 #include <core/Thread.hpp>
 
-#include <boost/chrono.hpp>
+#include <chrono>
 #include <boost/interprocess/ipc/message_queue.hpp>
 
+#include <set>
 #include <map>
 #include <vector>
 #include <string>
@@ -27,22 +28,22 @@ namespace Common
 
     public:
         HeartbeatReceiver(std::string, 
-                         boost::chrono::milliseconds = boost::chrono::milliseconds(2500),
-                         boost::chrono::milliseconds = boost::chrono::milliseconds(5000));
+                         std::chrono::milliseconds = std::chrono::milliseconds(2500),
+                         std::chrono::milliseconds = std::chrono::milliseconds(5000));
         ~HeartbeatReceiver();
         
     public: // Gets/Sets (boring)
         std::string getMessageQueueName();
         void setMessageQueueName(std::string);
-        boost::chrono::milliseconds getExpiredInterval();
-        void setExpiredInterval(boost::chrono::milliseconds);
-        boost::chrono::milliseconds getCheckInterval();
-        void setCheckInterval(boost::chrono::milliseconds);
+        std::chrono::milliseconds getExpiredInterval();
+        void setExpiredInterval(std::chrono::milliseconds);
+        std::chrono::milliseconds getCheckInterval();
+        void setCheckInterval(std::chrono::milliseconds);
     
     public:
         void addSenderId(std::string);
         std::set<std::string> deadIds();
-        boost::chrono::system_clock::time_point getLastBeat(std::string);
+        std::chrono::system_clock::time_point getLastBeat(std::string);
         
 
     private:
@@ -53,18 +54,18 @@ namespace Common
         void _run() override;
 
     private: // methods for states
-        boost::chrono::milliseconds _init();
-        boost::chrono::milliseconds _createMQ();
-        boost::chrono::milliseconds _listen();
-        boost::chrono::milliseconds _checkPulses();
+        std::chrono::milliseconds _init();
+        std::chrono::milliseconds _createMQ();
+        std::chrono::milliseconds _listen();
+        std::chrono::milliseconds _checkPulses();
 
     private:
         std::mutex _mutex;
         State_e _state;
         std::string _messageQueueName;
-        boost::chrono::milliseconds _checkInterval;
-        boost::chrono::milliseconds _expiredInterval;
-        std::map<std::string, boost::chrono::system_clock::time_point> _lastBeats;
+        std::chrono::milliseconds _checkInterval;
+        std::chrono::milliseconds _expiredInterval;
+        std::map<std::string, std::chrono::system_clock::time_point> _lastBeats;
         std::set<std::string> _deadIds;
         std::shared_ptr<boost::interprocess::message_queue> _pMQ;
     };

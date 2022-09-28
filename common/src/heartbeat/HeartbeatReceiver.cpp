@@ -3,13 +3,12 @@
 #include <iostream>
 
 namespace bip = boost::interprocess;
-namespace bc = boost::chrono;
 
 namespace Common
 {
 HeartbeatReceiver::HeartbeatReceiver(std::string messageQueueName, 
-                                     bc::milliseconds checkInterval,
-                                     bc::milliseconds expiredInterval)
+                                     std::chrono::milliseconds checkInterval,
+                                     std::chrono::milliseconds expiredInterval)
 : _state(INIT),
   _messageQueueName(messageQueueName),
   _checkInterval(checkInterval),
@@ -30,22 +29,22 @@ void HeartbeatReceiver::setMessageQueueName(std::string messageQueueName)
     std::lock_guard<std::mutex> lock(_mutex);
     _messageQueueName = messageQueueName;
 }
-bc::milliseconds HeartbeatReceiver::getExpiredInterval()
+std::chrono::milliseconds HeartbeatReceiver::getExpiredInterval()
 {
     std::lock_guard<std::mutex> lock(_mutex);
     return _expiredInterval;
 }
-void HeartbeatReceiver::setExpiredInterval(bc::milliseconds expiredInterval)
+void HeartbeatReceiver::setExpiredInterval(std::chrono::milliseconds expiredInterval)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     _expiredInterval = expiredInterval;
 }
-bc::milliseconds HeartbeatReceiver::getCheckInterval()
+std::chrono::milliseconds HeartbeatReceiver::getCheckInterval()
 {
     std::lock_guard<std::mutex> lock(_mutex);
     return _checkInterval;
 }
-void HeartbeatReceiver::setCheckInterval(bc::milliseconds checkInterval)
+void HeartbeatReceiver::setCheckInterval(std::chrono::milliseconds checkInterval)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     _checkInterval = checkInterval;
@@ -65,9 +64,9 @@ HeartbeatReceiver::State_e HeartbeatReceiver::_getState()
 //-----------------------------------------------------------------------------
 void HeartbeatReceiver::addSenderId(std::string newSenderId)
 {
-    typedef std::pair<std::string, bc::system_clock::time_point> beatPair_t;
+    typedef std::pair<std::string, std::chrono::system_clock::time_point> beatPair_t;
     // Time of zero to show its OLD (aka no beats yet)
-    bc::system_clock::time_point time_zero(bc::milliseconds(0));
+    std::chrono::system_clock::time_point time_zero(std::chrono::milliseconds(0));
     beatPair_t bp(newSenderId, time_zero);
 
     // add pair to last beat map
@@ -78,7 +77,7 @@ std::set<std::string> HeartbeatReceiver::deadIds()
 {
     return _deadIds;
 }
-bc::system_clock::time_point HeartbeatReceiver::getLastBeat(std::string id)
+std::chrono::system_clock::time_point HeartbeatReceiver::getLastBeat(std::string id)
 {
     return _lastBeats.at(id);
 }
@@ -87,7 +86,7 @@ void HeartbeatReceiver::_run()
 {
     do
     {
-        bc::milliseconds nextSleepTime;
+        std::chrono::milliseconds nextSleepTime;
         switch (_getState())
         {
         case INIT:
@@ -106,18 +105,18 @@ void HeartbeatReceiver::_run()
         default:
             break;
         }
-        boost::this_thread::sleep_for(nextSleepTime);
+        std::this_thread::sleep_for(nextSleepTime);
     } while (!_getShutdown());
 
     _setState(SHUTDOWN);
 }
 
-boost::chrono::milliseconds HeartbeatReceiver::_init()
+std::chrono::milliseconds HeartbeatReceiver::_init()
 {
     _setState(CREATING_MQ);
-    return bc::milliseconds(0);
+    return std::chrono::milliseconds(0);
 }
-boost::chrono::milliseconds HeartbeatReceiver::_createMQ()
+std::chrono::milliseconds HeartbeatReceiver::_createMQ()
 {
     size_t max_num_msgs = 100;
     size_t bufSize  = 2 * sizeof(Common::HeartbeatMessage);
@@ -132,14 +131,14 @@ boost::chrono::milliseconds HeartbeatReceiver::_createMQ()
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
-        return bc::milliseconds(250);
+        return std::chrono::milliseconds(250);
     }
 
     _setState(LISTENING);
-    return bc::milliseconds(0);
+    return std::chrono::milliseconds(0);
 
 }
-boost::chrono::milliseconds HeartbeatReceiver::_listen()
+std::chrono::milliseconds HeartbeatReceiver::_listen()
 {
     bool msgsRemain = true;
     while(_pMQ && msgsRemain)
@@ -159,7 +158,7 @@ boost::chrono::milliseconds HeartbeatReceiver::_listen()
             ia >> rcvd_hbm;
 
             std::string id = rcvd_hbm.getId();
-            bc::system_clock::time_point tp = rcvd_hbm.getBeatTime();
+            std::chrono::system_clock::time_point tp = rcvd_hbm.getBeatTime();
             _lastBeats[id] = tp;
         }
         else
@@ -169,17 +168,17 @@ boost::chrono::milliseconds HeartbeatReceiver::_listen()
     }
 
     _setState(CHECK_PULSES);
-    return bc::milliseconds(0);
+    return std::chrono::milliseconds(0);
 }
 
-boost::chrono::milliseconds HeartbeatReceiver::_checkPulses()
+std::chrono::milliseconds HeartbeatReceiver::_checkPulses()
 {
     for(auto beatPair : _lastBeats)
     {
         bool isDead = false;
         std::string id = beatPair.first;
 
-        bc::system_clock::duration diff = bc::system_clock::now() - beatPair.second;
+        std::chrono::system_clock::duration diff = std::chrono::system_clock::now() - beatPair.second;
         double diff_ms = diff.count() / 1e6;
         double expiredInterval_ms = getExpiredInterval().count();
 

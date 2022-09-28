@@ -3,7 +3,7 @@
 
 #include <core/Thread.hpp>
 
-#include <boost/chrono.hpp>
+#include <chrono>
 #include <boost/interprocess/ipc/message_queue.hpp>
 
 #include <mutex>
@@ -25,14 +25,14 @@ class HeartbeatSender : public Thread
 
     public:
         HeartbeatSender(std::string, std::string);
-        HeartbeatSender(std::string, std::string, boost::chrono::milliseconds);
+        HeartbeatSender(std::string, std::string, std::chrono::milliseconds);
         ~HeartbeatSender();
 
     public: // Gets/Sets (boring)
         std::string getMessageQueueName();
         void setMessageQueueName(std::string);
-        boost::chrono::milliseconds getSendingInterval();
-        void setSendingInterval(boost::chrono::milliseconds);
+        std::chrono::milliseconds getSendingInterval();
+        void setSendingInterval(std::chrono::milliseconds);
 
     private:
         void _setState(State_e);
@@ -43,10 +43,10 @@ class HeartbeatSender : public Thread
         void _run() override;
 
     private: // methods for various states
-        boost::chrono::milliseconds _init();
-        boost::chrono::milliseconds _joinMQ();
-        boost::chrono::milliseconds _beat();
-        boost::chrono::milliseconds _beatSendFailed();
+        std::chrono::milliseconds _init();
+        std::chrono::milliseconds _joinMQ();
+        std::chrono::milliseconds _beat();
+        std::chrono::milliseconds _beatSendFailed();
 
 
     private:
@@ -55,7 +55,7 @@ class HeartbeatSender : public Thread
         std::string _id;
         std::string _messageQueueName;
         int _beatSegment;
-        boost::chrono::milliseconds _sendingInterval;
+        std::chrono::milliseconds _sendingInterval;
         std::shared_ptr<boost::interprocess::message_queue> _pMQ;
     
 };

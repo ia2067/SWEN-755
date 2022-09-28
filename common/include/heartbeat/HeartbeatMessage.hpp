@@ -1,7 +1,7 @@
 #ifndef COMMON_HEARTBEATMESSAGE_HPP
 #define COMMON_HEARTBEATMESSAGE_HPP
 
-#include <boost/chrono.hpp>
+#include <chrono>
 #include <boost/serialization/binary_object.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
@@ -22,16 +22,16 @@ namespace Common
             HeartbeatMessage();
             HeartbeatMessage(std::string id);
             HeartbeatMessage(std::string id,
-                            boost::chrono::system_clock::time_point beatTime);
+                            std::chrono::system_clock::time_point beatTime);
             virtual ~HeartbeatMessage() = default;
 
         public:
             std::string getId();
-            boost::chrono::system_clock::time_point getBeatTime();
+            std::chrono::system_clock::time_point getBeatTime();
 
         private:
             std::string _id;
-            boost::chrono::system_clock::time_point _beatTime;
+            std::chrono::system_clock::time_point _beatTime;
     };    
 } // namespace Common
 

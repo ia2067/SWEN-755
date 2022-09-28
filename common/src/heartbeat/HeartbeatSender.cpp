@@ -2,22 +2,22 @@
 #include <heartbeat/HeartbeatMessage.hpp>
 
 #include <iostream>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 const int NUM_BEAT_SEGMENTS = 10;
 
 namespace bip = boost::interprocess;
-namespace bc = boost::chrono;
 
 namespace Common
 {
 
 //-----------------------------------------------------------------------------
 HeartbeatSender::HeartbeatSender(std::string id, std::string messageQueueName)
-: HeartbeatSender(id, messageQueueName, bc::milliseconds(2000))
+: HeartbeatSender(id, messageQueueName, std::chrono::milliseconds(2000))
 { }
 HeartbeatSender::HeartbeatSender(std::string id,
                                  std::string messageQueueName, 
-                                 bc::milliseconds sendingInterval)
+                                 std::chrono::milliseconds sendingInterval)
 : _state(INIT),
   _id(id),
   _messageQueueName(messageQueueName),
@@ -41,12 +41,12 @@ void HeartbeatSender::setMessageQueueName(std::string messageQueueName)
     std::lock_guard<std::mutex> lock(_mutex);
     _messageQueueName = messageQueueName;
 }
-bc::milliseconds HeartbeatSender::getSendingInterval()
+std::chrono::milliseconds HeartbeatSender::getSendingInterval()
 {
     std::lock_guard<std::mutex> lock(_mutex);
     return _sendingInterval;
 }
-void HeartbeatSender::setSendingInterval(bc::milliseconds sendingInterval)
+void HeartbeatSender::setSendingInterval(std::chrono::milliseconds sendingInterval)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     _sendingInterval = sendingInterval;
@@ -66,7 +66,7 @@ HeartbeatSender::State_e HeartbeatSender::_getState()
 bool HeartbeatSender::_sendBeat()
 {
     Common::HeartbeatMessage hbm(_id,
-                                 bc::system_clock::now());
+                                 std::chrono::system_clock::now());
 
     std::ostringstream oss;
     boost::archive::text_oarchive oa(oss);
@@ -76,8 +76,9 @@ bool HeartbeatSender::_sendBeat()
     std::string serialized_msg(oss.str());
     char msg[serialized_msg.length()];
     serialized_msg.copy(msg, serialized_msg.length());
-    auto timeout = boost::posix_time::second_clock::local_time() + boost::posix_time::seconds(1);
-
+    auto currentTimePlus1 = std::chrono::system_clock::now() + std::chrono::seconds(1);
+    auto intermediate = std::chrono::system_clock::to_time_t(currentTimePlus1);
+    auto timeout = boost::posix_time::from_time_t(intermediate);
     // std::cout << "buh buh" << std::endl;
     
     if(!_pMQ->timed_send(msg, serialized_msg.length(), 1, timeout))
@@ -91,7 +92,7 @@ void HeartbeatSender::_run()
 {
     do
     {
-        bc::milliseconds nextSleepTime;
+        std::chrono::milliseconds nextSleepTime;
         switch (_getState())
         {
         case INIT:
@@ -110,18 +111,18 @@ void HeartbeatSender::_run()
         default:
             break;
         }
-        boost::this_thread::sleep_for(nextSleepTime);
+        std::this_thread::sleep_for(nextSleepTime);
     } while (!_getShutdown());
 
     _setState(SHUTDOWN);
 }
 
-bc::milliseconds HeartbeatSender::_init()
+std::chrono::milliseconds HeartbeatSender::_init()
 {
     _setState(JOINING_MQ);
-    return bc::milliseconds(0);
+    return std::chrono::milliseconds(0);
 }
-bc::milliseconds HeartbeatSender::_joinMQ()
+std::chrono::milliseconds HeartbeatSender::_joinMQ()
 {
 
     try
@@ -133,15 +134,15 @@ bc::milliseconds HeartbeatSender::_joinMQ()
     {
         // std::cerr << e.what() << '\n';
         // try again in 1/4 of a second
-        return bc::milliseconds(250);
+        return std::chrono::milliseconds(250);
     }
     
     // Sucess!
     _setState(BEATING);
     // little pause before first beats
-    return bc::milliseconds(100);
+    return std::chrono::milliseconds(100);
 }
-bc::milliseconds HeartbeatSender::_beat()
+std::chrono::milliseconds HeartbeatSender::_beat()
 {
     if(_beatSegment >= NUM_BEAT_SEGMENTS)
     {
@@ -152,7 +153,7 @@ bc::milliseconds HeartbeatSender::_beat()
         if(!_sendBeat())
         {
             _setState(SEND_FAILED);
-            return bc::milliseconds(0);
+            return std::chrono::milliseconds(0);
         }
     }
     else
@@ -164,11 +165,11 @@ bc::milliseconds HeartbeatSender::_beat()
     // so lets break the interval up into 10 bits
     return getSendingInterval() / NUM_BEAT_SEGMENTS;
 }
-boost::chrono::milliseconds HeartbeatSender::_beatSendFailed()
+std::chrono::milliseconds HeartbeatSender::_beatSendFailed()
 {
     if(!_sendBeat())
     {
-        return bc::milliseconds(100);
+        return std::chrono::milliseconds(100);
     }
 
     // Success!

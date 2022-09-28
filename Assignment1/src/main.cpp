@@ -20,7 +20,7 @@ int main(int argc, char const *argv[])
     sleep(1);
     bp::child secondarySensorProcess("./sensorProcess --size 10 --scaleFactor 2.0 --mq myQueue --id secondarySensor");
 
-    Common::HeartbeatReceiver hr(mqn, boost::chrono::milliseconds(50), boost::chrono::milliseconds(3000));
+    Common::HeartbeatReceiver hr(mqn, std::chrono::milliseconds(50), std::chrono::milliseconds(3000));
 
     hr.start();
     hr.addSenderId("primarySensor");
@@ -28,16 +28,16 @@ int main(int argc, char const *argv[])
     
     sleep(60);
 
-    boost::chrono::system_clock::time_point current_time = boost::chrono::system_clock::now();
-    std::time_t tt = boost::chrono::system_clock::to_time_t(current_time);
+    std::chrono::system_clock::time_point current_time = std::chrono::system_clock::now();
+    std::time_t tt = std::chrono::system_clock::to_time_t(current_time);
     std::cout << "------------------------------------" << std::endl;
     std::cout << "current time: " << std::ctime(&tt);
     std::cout << "------------------------------------" << std::endl;
     for(auto dead : hr.deadIds())
     {
         std::cout << "        DEAD: " << dead << std::endl;
-        boost::chrono::system_clock::time_point tp(hr.getLastBeat(dead));
-        std::time_t tt = boost::chrono::system_clock::to_time_t(tp);
+        std::chrono::system_clock::time_point tp(hr.getLastBeat(dead));
+        std::time_t tt = std::chrono::system_clock::to_time_t(tp);
         std::cout << "  last comms: " << std::ctime(&tt);
         std::cout << "------------------------------------" << std::endl;
     }

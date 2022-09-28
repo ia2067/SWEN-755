@@ -6,25 +6,14 @@ set(core_SOURCES
     src/core/Thread.cpp
     )
 
-set(Boost_CoreLibNeededLibs
-    thread 
-)
-# find boost libs for this specific project
-find_package(Boost 1.71.0 COMPONENTS  ${Boost_CoreLibNeededLibs})
-
-# install them
-if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-    # Create common library
-    add_library(libcore 
-                STATIC 
-                ${core_SOURCES}
-    )
-    # add boost libs to it
-    target_link_libraries(libcore ${Boost_LIBRARIES} rt)
-else()
-    message(SEND_ERROR "BOOST NOT FOUND!")
-endif()
+include_directories(${Boost_INCLUDE_DIRS})
+# Create common library
+add_library(libcore 
+            STATIC 
+            ${core_SOURCES}
+            )
+# add boost libs to it
+target_link_libraries(libcore ${Boost_LIBRARIES} rt)
 
 target_include_directories(
     libcore

@@ -20,7 +20,7 @@ namespace Common
     {
         _setShutdown(false);
 
-        _pThread = std::make_shared<boost::thread>(
+        _pThread = std::make_shared<std::thread>(
             [this] { 
                         _run(); 
                    });

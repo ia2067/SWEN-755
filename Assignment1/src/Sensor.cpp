@@ -2,8 +2,6 @@
 #include <Sensor.hpp>
 #include <time.h>
 
-namespace bc = boost::chrono;
-
 
 Sensor::Sensor(int sample_size, float scaling_factor, 
                std::string messageQueue, std::string id)
@@ -77,7 +75,7 @@ void Sensor::_cacheSample(int newSample)
 void Sensor::_run() {
     do
     {
-        bc::milliseconds nextSleepTime;
+        std::chrono::milliseconds nextSleepTime;
         switch(_getState())
         {
         case INIT:
@@ -95,20 +93,20 @@ void Sensor::_run() {
         default:
             break;
         }
-        boost::this_thread::sleep_for(nextSleepTime);
+        std::this_thread::sleep_for(nextSleepTime);
     } while (!_getShutdown());
 
     _setState(DEAD);
 }
 
-bc::milliseconds Sensor::_init()
+std::chrono::milliseconds Sensor::_init()
 {
     _pHeartbeatSender->start();
     _setState(PREFILL);
-    return bc::milliseconds(0);
+    return std::chrono::milliseconds(0);
 }
 
-boost::chrono::milliseconds Sensor::_prefill()
+std::chrono::milliseconds Sensor::_prefill()
 {
     for(int i = 0 ; i < Sensor::sample_size; i++)
     {
@@ -116,10 +114,10 @@ boost::chrono::milliseconds Sensor::_prefill()
     }
     
     _setState(MEASURE);
-    return bc::milliseconds(0);
+    return std::chrono::milliseconds(0);
 }
 
-bc::milliseconds Sensor::_measure()
+std::chrono::milliseconds Sensor::_measure()
 {
     sampleVal = sample(20, 20);
     measureVal = measure();
@@ -135,16 +133,16 @@ bc::milliseconds Sensor::_measure()
     if(percent_error >= 100)
     {
         _setState(FAILURE);
-        return bc::milliseconds(0);
+        return std::chrono::milliseconds(0);
     }
-    return bc::milliseconds(500);
+    return std::chrono::milliseconds(500);
 }
 
-bc::milliseconds Sensor::_failure()
+std::chrono::milliseconds Sensor::_failure()
 {
     // std::cout << "Num Runs: " << numRuns << std::endl;
     std::cout << "SENSOR FAILURE: " << Sensor::id << std::endl;
     _pHeartbeatSender->end();
     _setState(DEAD);
-    return bc::milliseconds(0);
+    return std::chrono::milliseconds(0);
 }

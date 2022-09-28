@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <mutex>
+#include <list>
 
 #include <heartbeat/HeartbeatSender.hpp>
 
@@ -65,10 +66,10 @@ private:
     void _cacheSample(int);
 
 private:
-    boost::chrono::milliseconds _init();
-    boost::chrono::milliseconds _prefill();
-    boost::chrono::milliseconds _measure();
-    boost::chrono::milliseconds _failure();
+    std::chrono::milliseconds _init();
+    std::chrono::milliseconds _prefill();
+    std::chrono::milliseconds _measure();
+    std::chrono::milliseconds _failure();
     
 private:
     std::mutex _mutex;
