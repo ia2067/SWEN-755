@@ -23,4 +23,4 @@ std::chrono::system_clock::time_point Message::getBeatTime()
 {
     return _beatTime;
 }
-} // namespace Common
+} // namespace Heartbeat

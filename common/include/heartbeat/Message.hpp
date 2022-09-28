@@ -1,5 +1,5 @@
-#ifndef COMMON_HEARTBEATMESSAGE_HPP
-#define COMMON_HEARTBEATMESSAGE_HPP
+#ifndef HEARTBEAT_MESSAGE_HPP
+#define HEARTBEAT_MESSAGE_HPP
 
 #include <chrono>
 #include <boost/serialization/binary_object.hpp>
@@ -33,7 +33,7 @@ namespace Heartbeat
             std::string _id;
             std::chrono::system_clock::time_point _beatTime;
     };    
-} // namespace Common
+} // namespace Heartbeat
 
 
 

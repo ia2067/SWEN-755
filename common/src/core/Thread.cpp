@@ -61,4 +61,4 @@ namespace Core
         std::lock_guard<std::mutex> lock(_mutex);
         _shutdown = shutdown;
     }
-} // namespace Common
+} // namespace Core

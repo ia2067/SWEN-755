@@ -1,5 +1,5 @@
-#ifndef COMMON_HEARTBEATSENDER_HPP
-#define COMMON_HEARTBEATSENDER_HPP
+#ifndef HEARTBEAT_SENDER_HPP
+#define HEARTBEAT_SENDER_HPP
 
 #include <core/Thread.hpp>
 
@@ -59,6 +59,6 @@ class Sender : public Core::Thread
         std::shared_ptr<boost::interprocess::message_queue> _pMQ;
     
 };
-} // namespace Common
+} // namespace HEartbeat
 
-#endif // COMMON_HEARTBEATSENDER_HPP
+#endif // HEARTBEAT_SENDER_HPP

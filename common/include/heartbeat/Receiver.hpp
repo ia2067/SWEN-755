@@ -1,5 +1,5 @@
-#ifndef COMMON_HEARTBEATRECEIVER_HPP
-#define COMMON_HEARTBEATRECEIVER_HPP
+#ifndef HEARTBEAT_RECEIVER_HPP
+#define HEARTBEAT_RECEIVER_HPP
 
 #include <core/Thread.hpp>
 
@@ -69,7 +69,7 @@ namespace Heartbeat
         std::set<std::string> _deadIds;
         std::shared_ptr<boost::interprocess::message_queue> _pMQ;
     };
-} // namespace Common
+} // namespace Heartbeat
 
 
 

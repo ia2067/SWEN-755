@@ -199,4 +199,4 @@ std::chrono::milliseconds Receiver::_checkPulses()
     _setState(LISTENING);
     return getCheckInterval();
 }
-} // namespace Common
+} // namespace Heartbeat

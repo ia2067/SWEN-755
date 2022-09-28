@@ -1,5 +1,5 @@
-#ifndef COMMON_THREAD_HPP
-#define COMMON_THREAD_HPP
+#ifndef CORE_THREAD_HPP
+#define CORE_THREAD_HPP
 
 #include <memory> //shared_ptr
 #include <thread>
@@ -33,7 +33,7 @@ namespace Core
         std::shared_ptr<std::thread> _pThread;
         bool _shutdown;
     };    
-} // namespace Common
+} // namespace Core
 
 
 #endif

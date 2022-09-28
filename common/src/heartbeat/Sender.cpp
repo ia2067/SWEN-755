@@ -177,4 +177,4 @@ std::chrono::milliseconds Sender::_beatSendFailed()
     return getSendingInterval() / NUM_BEAT_SEGMENTS;
 }
     
-} // namespace Common
+} // namespace Heartbeat
