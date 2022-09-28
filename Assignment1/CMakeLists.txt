@@ -1,4 +1,4 @@
-project(Assignment1 VERSION 0.1.0)
+project(Assignment1 VERSION 1.0.0)
 
 set(CMAKE_CXX_FLAGS, "-lrt")
 # common library
