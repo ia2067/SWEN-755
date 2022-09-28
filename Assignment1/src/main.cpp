@@ -3,7 +3,7 @@
 #include <iostream>
 #include <ctime>
 
-#include <heartbeat/HeartbeatReceiver.hpp>
+#include <heartbeat/Receiver.hpp>
 
 #include <boost/process.hpp>
 #include <boost/interprocess/ipc/message_queue.hpp>
@@ -20,7 +20,7 @@ int main(int argc, char const *argv[])
     sleep(1);
     bp::child secondarySensorProcess("./sensorProcess --size 10 --scaleFactor 2.0 --mq myQueue --id secondarySensor");
 
-    Common::HeartbeatReceiver hr(mqn, std::chrono::milliseconds(50), std::chrono::milliseconds(3000));
+    Heartbeat::Receiver hr(mqn, std::chrono::milliseconds(50), std::chrono::milliseconds(3000));
 
     hr.start();
     hr.addSenderId("primarySensor");

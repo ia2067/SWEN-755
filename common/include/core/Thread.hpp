@@ -5,7 +5,7 @@
 #include <thread>
 #include <mutex>
 
-namespace Common
+namespace Core
 {
     class Thread
     {

@@ -25,9 +25,9 @@ target_include_directories(
 ##### START LIB HEARTBEAT #####
 set(heartbeat_lib_name libheartbeat)
 set(heartbit_SOURCES
-    src/heartbeat/HeartbeatSender.cpp
-    src/heartbeat/HeartbeatMessage.cpp
-    src/heartbeat/HeartbeatReceiver.cpp
+    src/heartbeat/Sender.cpp
+    src/heartbeat/Message.cpp
+    src/heartbeat/Receiver.cpp
     )
 
 set(Boost_HearbeatNeededLibs

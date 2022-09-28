@@ -1,5 +1,5 @@
-#include <heartbeat/HeartbeatSender.hpp>
-#include <heartbeat/HeartbeatMessage.hpp>
+#include <heartbeat/Sender.hpp>
+#include <heartbeat/Message.hpp>
 
 #include <iostream>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -8,14 +8,14 @@ const int NUM_BEAT_SEGMENTS = 10;
 
 namespace bip = boost::interprocess;
 
-namespace Common
+namespace Heartbeat
 {
 
 //-----------------------------------------------------------------------------
-HeartbeatSender::HeartbeatSender(std::string id, std::string messageQueueName)
-: HeartbeatSender(id, messageQueueName, std::chrono::milliseconds(2000))
+Sender::Sender(std::string id, std::string messageQueueName)
+: Sender(id, messageQueueName, std::chrono::milliseconds(2000))
 { }
-HeartbeatSender::HeartbeatSender(std::string id,
+Sender::Sender(std::string id,
                                  std::string messageQueueName, 
                                  std::chrono::milliseconds sendingInterval)
 : _state(INIT),
@@ -26,47 +26,47 @@ HeartbeatSender::HeartbeatSender(std::string id,
   _pMQ(nullptr)
 { }
 
-HeartbeatSender::~HeartbeatSender()
+Sender::~Sender()
 {  
     end();
 }
 //-----------------------------------------------------------------------------
-std::string HeartbeatSender::getMessageQueueName()
+std::string Sender::getMessageQueueName()
 {
     std::lock_guard<std::mutex> lock(_mutex);
     return _messageQueueName;
 }
-void HeartbeatSender::setMessageQueueName(std::string messageQueueName)
+void Sender::setMessageQueueName(std::string messageQueueName)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     _messageQueueName = messageQueueName;
 }
-std::chrono::milliseconds HeartbeatSender::getSendingInterval()
+std::chrono::milliseconds Sender::getSendingInterval()
 {
     std::lock_guard<std::mutex> lock(_mutex);
     return _sendingInterval;
 }
-void HeartbeatSender::setSendingInterval(std::chrono::milliseconds sendingInterval)
+void Sender::setSendingInterval(std::chrono::milliseconds sendingInterval)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     _sendingInterval = sendingInterval;
 }
 //-----------------------------------------------------------------------------
-void HeartbeatSender::_setState(State_e state)
+void Sender::_setState(State_e state)
 {
     // std::cout << "HBS::State: " << state << std::endl;
     std::lock_guard<std::mutex> lock(_mutex);
     _state = state;
 }
-HeartbeatSender::State_e HeartbeatSender::_getState()
+Sender::State_e Sender::_getState()
 {
     std::lock_guard<std::mutex> lock(_mutex);
     return _state;
 }
-bool HeartbeatSender::_sendBeat()
+bool Sender::_sendBeat()
 {
-    Common::HeartbeatMessage hbm(_id,
-                                 std::chrono::system_clock::now());
+    Heartbeat::Message hbm(_id,
+                           std::chrono::system_clock::now());
 
     std::ostringstream oss;
     boost::archive::text_oarchive oa(oss);
@@ -88,7 +88,7 @@ bool HeartbeatSender::_sendBeat()
     return true;
 }
 
-void HeartbeatSender::_run() 
+void Sender::_run() 
 {
     do
     {
@@ -117,12 +117,12 @@ void HeartbeatSender::_run()
     _setState(SHUTDOWN);
 }
 
-std::chrono::milliseconds HeartbeatSender::_init()
+std::chrono::milliseconds Sender::_init()
 {
     _setState(JOINING_MQ);
     return std::chrono::milliseconds(0);
 }
-std::chrono::milliseconds HeartbeatSender::_joinMQ()
+std::chrono::milliseconds Sender::_joinMQ()
 {
 
     try
@@ -142,7 +142,7 @@ std::chrono::milliseconds HeartbeatSender::_joinMQ()
     // little pause before first beats
     return std::chrono::milliseconds(100);
 }
-std::chrono::milliseconds HeartbeatSender::_beat()
+std::chrono::milliseconds Sender::_beat()
 {
     if(_beatSegment >= NUM_BEAT_SEGMENTS)
     {
@@ -165,7 +165,7 @@ std::chrono::milliseconds HeartbeatSender::_beat()
     // so lets break the interval up into 10 bits
     return getSendingInterval() / NUM_BEAT_SEGMENTS;
 }
-std::chrono::milliseconds HeartbeatSender::_beatSendFailed()
+std::chrono::milliseconds Sender::_beatSendFailed()
 {
     if(!_sendBeat())
     {

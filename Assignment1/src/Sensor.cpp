@@ -18,7 +18,7 @@ Sensor::Sensor(int sample_size, float scaling_factor,
     Sensor::id = id;
     Sensor::messageQueue = messageQueue;
 
-    _pHeartbeatSender = std::make_shared<Common::HeartbeatSender>(id, messageQueue);
+    _pHeartbeatSender = std::make_shared<Heartbeat::Sender>(id, messageQueue);
 }
 
 

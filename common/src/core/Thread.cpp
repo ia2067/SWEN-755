@@ -1,7 +1,7 @@
 #include <core/Thread.hpp>
 #include <iostream>
 
-namespace Common
+namespace Core
 {
     Thread::Thread()
     : _pThread(nullptr),

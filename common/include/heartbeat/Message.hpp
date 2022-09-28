@@ -6,9 +6,9 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 
-namespace Common
+namespace Heartbeat
 {
-    class HeartbeatMessage
+    class Message
     {
         private: //serialization
             friend class boost::serialization::access;
@@ -19,11 +19,11 @@ namespace Common
                 ar & boost::serialization::make_binary_object(&_beatTime, sizeof(_beatTime));
             }
         public:
-            HeartbeatMessage();
-            HeartbeatMessage(std::string id);
-            HeartbeatMessage(std::string id,
+            Message();
+            Message(std::string id);
+            Message(std::string id,
                             std::chrono::system_clock::time_point beatTime);
-            virtual ~HeartbeatMessage() = default;
+            virtual ~Message() = default;
 
         public:
             std::string getId();

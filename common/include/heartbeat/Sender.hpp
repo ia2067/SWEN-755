@@ -8,9 +8,9 @@
 
 #include <mutex>
 
-namespace Common
+namespace Heartbeat
 {
-class HeartbeatSender : public Thread
+class Sender : public Core::Thread
 {
 
     private:
@@ -24,9 +24,9 @@ class HeartbeatSender : public Thread
         };
 
     public:
-        HeartbeatSender(std::string, std::string);
-        HeartbeatSender(std::string, std::string, std::chrono::milliseconds);
-        ~HeartbeatSender();
+        Sender(std::string, std::string);
+        Sender(std::string, std::string, std::chrono::milliseconds);
+        ~Sender();
 
     public: // Gets/Sets (boring)
         std::string getMessageQueueName();
@@ -39,7 +39,7 @@ class HeartbeatSender : public Thread
         State_e _getState();
         bool _sendBeat();
         
-    private: // common::thread
+    private: // Core::thread
         void _run() override;
 
     private: // methods for various states

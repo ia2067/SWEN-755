@@ -5,9 +5,9 @@
 #include <mutex>
 #include <list>
 
-#include <heartbeat/HeartbeatSender.hpp>
+#include <heartbeat/Sender.hpp>
 
-class Sensor : public Common::Thread{
+class Sensor : public Core::Thread{
 
 public:
     enum State_e {
@@ -57,7 +57,7 @@ public:
     float measure();
 
 private:
-    // common::thread
+    // Core::Thread
     void _run() override;
     State_e _getState();
     void _setState(State_e);
@@ -73,7 +73,7 @@ private:
     
 private:
     std::mutex _mutex;
-    std::shared_ptr<Common::HeartbeatSender> _pHeartbeatSender;
+    std::shared_ptr<Heartbeat::Sender> _pHeartbeatSender;
 
     std::string id;
     std::string messageQueue;

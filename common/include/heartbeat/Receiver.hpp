@@ -12,9 +12,9 @@
 #include <string>
 #include <mutex>
 
-namespace Common
+namespace Heartbeat
 {
-    class HeartbeatReceiver : public Thread
+    class Receiver : public Core::Thread
     {
     private:
         enum State_e {
@@ -27,10 +27,10 @@ namespace Common
         };
 
     public:
-        HeartbeatReceiver(std::string, 
-                         std::chrono::milliseconds = std::chrono::milliseconds(2500),
-                         std::chrono::milliseconds = std::chrono::milliseconds(5000));
-        ~HeartbeatReceiver();
+        Receiver(std::string, 
+                 std::chrono::milliseconds = std::chrono::milliseconds(2500),
+                 std::chrono::milliseconds = std::chrono::milliseconds(5000));
+        ~Receiver();
         
     public: // Gets/Sets (boring)
         std::string getMessageQueueName();
@@ -50,7 +50,7 @@ namespace Common
         void _setState(State_e);
         State_e _getState();
 
-    private: //Common::Thread
+    private: //Core::Thread
         void _run() override;
 
     private: // methods for states
