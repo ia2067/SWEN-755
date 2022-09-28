@@ -36,7 +36,7 @@ option(BUILD_DOC "Build Documentation" ON)
 
 find_package(Doxygen
              REQUIRED dot)
-
+MESSAGE(STATUS "THIS-> ${CMAKE_CURRENT_SOURCE_DIR}")
 if(Doxygen_FOUND)
     set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen.in)
     set(DOXYFILE ${CMAKE_CURRENT_BINARY_DIR}/doxyfile)

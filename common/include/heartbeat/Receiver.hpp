@@ -14,6 +14,10 @@
 
 namespace Heartbeat
 {
+    /**
+     * @brief A Heartbeat::Receiver which keeps track of alive/dead Heartbeat::Sender (s)
+     * 
+     */
     class Receiver : public Core::Thread
     {
     private:

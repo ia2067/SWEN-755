@@ -8,6 +8,10 @@
 
 namespace Heartbeat
 {
+    /**
+     * @brief Serializable Heartbeat Message
+     * 
+     */
     class Message
     {
         private: //serialization

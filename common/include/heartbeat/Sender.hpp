@@ -10,6 +10,10 @@
 
 namespace Heartbeat
 {
+    /**
+     * @brief Will periodically send Heartbeats
+     * 
+     */
 class Sender : public Core::Thread
 {
 
