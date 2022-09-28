@@ -1,5 +1,5 @@
-#include <HeartbeatSender.hpp>
-#include <HeartbeatMessage.hpp>
+#include <heartbeat/HeartbeatSender.hpp>
+#include <heartbeat/HeartbeatMessage.hpp>
 
 #include <iostream>
 

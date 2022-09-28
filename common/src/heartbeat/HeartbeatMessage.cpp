@@ -1,4 +1,4 @@
-#include <HeartbeatMessage.hpp>
+#include <heartbeat/HeartbeatMessage.hpp>
 
 namespace bc = boost::chrono;
 namespace Common

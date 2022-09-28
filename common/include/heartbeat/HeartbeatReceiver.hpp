@@ -1,7 +1,7 @@
 #ifndef COMMON_HEARTBEATRECEIVER_HPP
 #define COMMON_HEARTBEATRECEIVER_HPP
 
-#include <Thread.hpp>
+#include <core/Thread.hpp>
 
 #include <boost/chrono.hpp>
 #include <boost/interprocess/ipc/message_queue.hpp>

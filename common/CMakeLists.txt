@@ -1,42 +1,69 @@
-# common library
-set(common_lib_name libcommon)
-set(common_SOURCES 
-    src/HeartbeatSender.cpp
-    src/Thread.cpp
-    src/HeartbeatMessage.cpp
-    src/HeartbeatReceiver.cpp
-)
+set(COMMON_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
 
+##### START LIB CORE #####
+set(core_lib_name libcore)
+set(core_SOURCES
+    src/core/Thread.cpp
+    )
 
-
-set(Boost_CommonLibNeededLibs
+set(Boost_CoreLibNeededLibs
     thread 
-    chrono
-    serialization
 )
-
 # find boost libs for this specific project
-find_package(Boost 1.71.0 COMPONENTS  ${Boost_CommonLibNeededLibs})
+find_package(Boost 1.71.0 COMPONENTS  ${Boost_CoreLibNeededLibs})
 
 # install them
 if(Boost_FOUND)
-    message(STATUS "BOOST libs for ${PROJECT_NAME}/${common_lib_name}  found!")
     include_directories(${Boost_INCLUDE_DIRS})
     # Create common library
-    add_library(${common_lib_name} 
+    add_library(libcore 
                 STATIC 
-                ${common_SOURCES}
+                ${core_SOURCES}
     )
     # add boost libs to it
-    target_link_libraries(${common_lib_name} ${Boost_LIBRARIES} rt)
+    target_link_libraries(libcore ${Boost_LIBRARIES} rt)
 else()
     message(SEND_ERROR "BOOST NOT FOUND!")
 endif()
 
-set(COMMON_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
-
 target_include_directories(
-    ${common_lib_name}
+    libcore
     PRIVATE
     ${COMMON_INCLUDE_DIR}
 )
+##### END LIB CORE #####
+
+##### START LIB HEARTBEAT #####
+set(heartbeat_lib_name libheartbeat)
+set(heartbit_SOURCES
+    src/heartbeat/HeartbeatSender.cpp
+    src/heartbeat/HeartbeatMessage.cpp
+    src/heartbeat/HeartbeatReceiver.cpp
+    )
+
+set(Boost_HearbeatNeededLibs
+    chrono
+    serialization
+    )
+
+find_package(Boost 1.71.0 COMPONENTS  ${Boost_HearbeatNeededLibs})
+
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    # Create common library
+    add_library(libheartbeat 
+                STATIC 
+                ${heartbit_SOURCES}
+    )
+    # add boost libs to it
+    target_link_libraries(libheartbeat ${Boost_LIBRARIES} rt)
+else()
+    message(SEND_ERROR "BOOST NOT FOUND!")
+endif()
+
+target_include_directories(
+    libheartbeat
+    PRIVATE
+    ${COMMON_INCLUDE_DIR}
+)
+##### END LIB HEARTBEAT #####

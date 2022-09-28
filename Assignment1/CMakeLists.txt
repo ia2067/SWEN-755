@@ -3,6 +3,9 @@ project(Assignment1 VERSION 1.0.0)
 set(CMAKE_CXX_FLAGS, "-lrt")
 
 include_directories(${PROJECT_SOURCE_DIR}/../common/include)
+set(Assignment1_Libs
+    libcore
+    libheartbeat)
 
 set(sensor_process_exe_name sensorProcess)
 set(sensor_process_SOURCES
@@ -25,7 +28,7 @@ if(Boost_FOUND)
     target_link_libraries(${sensor_process_exe_name}
                           ${Boost_LIBRARIES})
     target_link_libraries(${sensor_process_exe_name}
-                          libcommon) 
+                          ${Assignment1_Libs}) 
 endif()
 
 target_include_directories(
@@ -43,7 +46,7 @@ set(main_SOURCES
 
 add_executable(${main_exe_name} ${main_SOURCES})
 target_link_libraries(${main_exe_name}
-                      libcommon)
+                      ${Assignment1_Libs})
 
 target_include_directories(
     ${main_exe_name}

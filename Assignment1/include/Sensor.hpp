@@ -4,7 +4,7 @@
 #include <iostream>
 #include <mutex>
 
-#include <HeartbeatSender.hpp>
+#include <heartbeat/HeartbeatSender.hpp>
 
 class Sensor : public Common::Thread{
 
