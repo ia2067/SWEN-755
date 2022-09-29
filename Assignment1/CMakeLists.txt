@@ -5,7 +5,8 @@ set(CMAKE_CXX_FLAGS, "-lrt")
 include_directories(${PROJECT_SOURCE_DIR}/../common/include)
 set(Assignment1_Libs
     libcore
-    libheartbeat)
+    libheartbeat
+    libsync)
 
 set(sensor_process_exe_name sensorProcess)
 set(sensor_process_SOURCES

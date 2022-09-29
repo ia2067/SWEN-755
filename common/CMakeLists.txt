@@ -56,3 +56,37 @@ target_include_directories(
     ${COMMON_INCLUDE_DIR}
 )
 ##### END LIB HEARTBEAT #####
+
+#### START LIB SYNC ####
+set(sync_lib_name libsync)
+set(sync_SOURCES
+    src/sync/Sender.cpp
+    src/sync/Receiver.cpp
+    src/sync/Message.cpp
+    )
+
+set(Boost_SyncNeededLibs
+    serialization
+    )
+
+find_package(Boost 1.71.0 COMPONENTS  ${Boost_SyncNeededLibs})
+
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    # Create common library
+    add_library(libsync 
+                STATIC 
+                ${sync_SOURCES}
+    )
+    # add boost libs to it
+    target_link_libraries(libsync ${Boost_LIBRARIES} rt)
+else()
+    message(SEND_ERROR "BOOST NOT FOUND!")
+endif()
+
+target_include_directories(
+    libsync
+    PRIVATE
+    ${COMMON_INCLUDE_DIR}
+)
+#### END LIB SYNC ####
