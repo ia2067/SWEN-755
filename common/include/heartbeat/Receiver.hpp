@@ -20,7 +20,7 @@ namespace Heartbeat
      */
     class Receiver : public Core::Thread
     {
-    private:
+    public:
         enum State_e {
             INIT, // This Heartbeat Sender object has been created.
             CREATING_MQ, // attemping to connect to the messaging queue
@@ -48,11 +48,11 @@ namespace Heartbeat
         void addSenderId(std::string);
         std::set<std::string> deadIds();
         std::chrono::system_clock::time_point getLastBeat(std::string);
+        State_e getState();
         
 
     private:
         void _setState(State_e);
-        State_e _getState();
 
     private: //Core::Thread
         void _run() override;

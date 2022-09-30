@@ -22,6 +22,9 @@ message(STATUS "Target System: ${CMAKE_SYSTEM}")
 # Define C++11
 set(CMAKE_CXX_STANDARD 11)
 
+#enabled testing
+enable_testing()
+
 # set(Boost_DEBUG 1)
 # set(Boost_USE_STATIC_LIBS OFF)
 # set(Boost_USE_MULTITHREADED OFF)
@@ -36,7 +39,7 @@ option(BUILD_DOC "Build Documentation" ON)
 
 find_package(Doxygen
              REQUIRED dot)
-MESSAGE(STATUS "THIS-> ${CMAKE_CURRENT_SOURCE_DIR}")
+
 if(Doxygen_FOUND)
     set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen.in)
     set(DOXYFILE ${CMAKE_CURRENT_BINARY_DIR}/doxyfile)

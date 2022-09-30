@@ -56,7 +56,7 @@ void Receiver::_setState(State_e state)
     std::lock_guard<std::mutex> lock(_mutex);
     _state = state;
 }
-Receiver::State_e Receiver::_getState()
+Receiver::State_e Receiver::getState()
 {
     std::lock_guard<std::mutex> lock(_mutex);
     return _state;
@@ -87,7 +87,7 @@ void Receiver::_run()
     do
     {
         std::chrono::milliseconds nextSleepTime;
-        switch (_getState())
+        switch (getState())
         {
         case INIT:
             nextSleepTime = _init();

@@ -17,7 +17,7 @@ namespace Heartbeat
 class Sender : public Core::Thread
 {
 
-    private:
+    public:
         enum State_e {
             INIT, // This Heartbeat Sender object has been created.
             JOINING_MQ, // attemping to connect to the messaging queue
@@ -37,10 +37,10 @@ class Sender : public Core::Thread
         void setMessageQueueName(std::string);
         std::chrono::milliseconds getSendingInterval();
         void setSendingInterval(std::chrono::milliseconds);
+        State_e getState();
 
     private:
         void _setState(State_e);
-        State_e _getState();
         bool _sendBeat();
         
     private: // Core::thread

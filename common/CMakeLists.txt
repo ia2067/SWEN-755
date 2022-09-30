@@ -45,7 +45,10 @@ if(Boost_FOUND)
                 ${heartbit_SOURCES}
     )
     # add boost libs to it
-    target_link_libraries(libheartbeat ${Boost_LIBRARIES} rt)
+    target_link_libraries(libheartbeat 
+                          libcore
+                          ${Boost_LIBRARIES} 
+                          rt)
 else()
     message(SEND_ERROR "BOOST NOT FOUND!")
 endif()
@@ -90,3 +93,6 @@ target_include_directories(
     ${COMMON_INCLUDE_DIR}
 )
 #### END LIB SYNC ####
+
+#### ADD TESTING ####
+add_subdirectory(test)
