@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.5.0)
 
 project(SWEN755 VERSION 1.0.0)
 
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -lrt -pthread")
+
 if(CMAKE_CXX_COMPILER MATCHES "win32$" AND
    CMAKE_C_COMPILER MATCHES "win32$")
     set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/windows.cmake")
