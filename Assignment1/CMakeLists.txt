@@ -1,6 +1,6 @@
 project(Assignment1 VERSION 1.0.0)
 
-set(CMAKE_CXX_FLAGS, "-lrt")
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -lrt -pthread")
 
 include_directories(${PROJECT_SOURCE_DIR}/../common/include)
 set(Assignment1_Libs
