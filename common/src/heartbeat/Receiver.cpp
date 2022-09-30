@@ -7,27 +7,23 @@ namespace bip = boost::interprocess;
 namespace Heartbeat
 {
 Receiver::Receiver(std::string messageQueueName, 
-                                     std::chrono::milliseconds checkInterval,
-                                     std::chrono::milliseconds expiredInterval)
+                   std::chrono::milliseconds checkInterval,
+                   std::chrono::milliseconds expiredInterval)
 : _state(INIT),
-  _messageQueueName(messageQueueName),
   _checkInterval(checkInterval),
-  _expiredInterval(expiredInterval)
+  _expiredInterval(expiredInterval),
+  _pMQ(std::make_shared<Core::MessageQueue<Message>>(messageQueueName, true))
 { }
 Receiver::~Receiver()
 {  
+    _pMQ->disconnect();
     end();
 }
 //-----------------------------------------------------------------------------
 std::string Receiver::getMessageQueueName()
 {
     std::lock_guard<std::mutex> lock(_mutex);
-    return _messageQueueName;
-}
-void Receiver::setMessageQueueName(std::string messageQueueName)
-{
-    std::lock_guard<std::mutex> lock(_mutex);
-    _messageQueueName = messageQueueName;
+    return _pMQ->getMessageQueueName();
 }
 std::chrono::milliseconds Receiver::getExpiredInterval()
 {
@@ -114,61 +110,34 @@ void Receiver::_run()
 std::chrono::milliseconds Receiver::_init()
 {
     _setState(CREATING_MQ);
-    return std::chrono::milliseconds(0);
+    return std::chrono::milliseconds(100);
 }
 std::chrono::milliseconds Receiver::_createMQ()
 {
-    size_t max_num_msgs = 100;
-    size_t bufSize  = 2 * sizeof(Heartbeat::Message);
-
-    try
-    {
-        _pMQ = std::make_shared<bip::message_queue>(bip::create_only,
-                                                    getMessageQueueName().c_str(),
-                                                    max_num_msgs,
-                                                    bufSize);
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
+    if(!_pMQ->connect())
         return std::chrono::milliseconds(250);
-    }
+        
 
     _setState(LISTENING);
-    return std::chrono::milliseconds(0);
+    return std::chrono::milliseconds(100);
 
 }
 std::chrono::milliseconds Receiver::_listen()
 {
     bool msgsRemain = true;
-    while(_pMQ && msgsRemain)
+    while(msgsRemain)
     {
-        size_t bufSize = 2 * sizeof(Heartbeat::Message); 
-        char buf[bufSize];
-        size_t rcvdSize;
-        uint pri;
-
-        Heartbeat::Message rcvd_hbm;
-
-        if(_pMQ->try_receive(buf, bufSize, rcvdSize, pri))
+        Heartbeat::Message hbm;
+        if(_pMQ->recvMessage(hbm, msgsRemain))
         {
-            std::istringstream iss(std::string(buf,bufSize));
-            boost::archive::text_iarchive ia(iss);
-
-            ia >> rcvd_hbm;
-
-            std::string id = rcvd_hbm.getId();
-            std::chrono::system_clock::time_point tp = rcvd_hbm.getBeatTime();
+            std::string id = hbm.getId();
+            std::chrono::system_clock::time_point tp = hbm.getBeatTime();
             _lastBeats[id] = tp;
-        }
-        else
-        {
-            msgsRemain = false;
         }
     }
 
     _setState(CHECK_PULSES);
-    return std::chrono::milliseconds(0);
+    return std::chrono::milliseconds(100);
 }
 
 std::chrono::milliseconds Receiver::_checkPulses()

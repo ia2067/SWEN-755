@@ -22,7 +22,7 @@ namespace Core
 
         _pThread = std::make_shared<std::thread>(
             [this] { 
-                        _run(); 
+                        _runRunner(); 
                    });
 
         // probs a better way to check the thread started ok
@@ -49,6 +49,17 @@ namespace Core
         
         _pThread = nullptr;
         return true;
+    }
+    void Thread::_runRunner()
+    {
+        try
+        {
+            this->_run();
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        } 
     }
 
     bool Thread::_getShutdown()

@@ -2,14 +2,16 @@
 #define HEARTBEAT_SENDER_HPP
 
 #include <core/Thread.hpp>
+#include <core/MessageQueue.hpp>
 
 #include <chrono>
-#include <boost/interprocess/ipc/message_queue.hpp>
 
 #include <mutex>
 
 namespace Heartbeat
 {
+    class Message;
+
     /**
      * @brief Will periodically send Heartbeats
      * 
@@ -34,7 +36,6 @@ class Sender : public Core::Thread
 
     public: // Gets/Sets (boring)
         std::string getMessageQueueName();
-        void setMessageQueueName(std::string);
         std::chrono::milliseconds getSendingInterval();
         void setSendingInterval(std::chrono::milliseconds);
         State_e getState();
@@ -57,10 +58,9 @@ class Sender : public Core::Thread
         std::mutex _mutex;
         State_e _state;
         std::string _id;
-        std::string _messageQueueName;
         int _beatSegment;
         std::chrono::milliseconds _sendingInterval;
-        std::shared_ptr<boost::interprocess::message_queue> _pMQ;
+        std::shared_ptr<Core::MessageQueue<Message>> _pMQ;
     
 };
 } // namespace HEartbeat

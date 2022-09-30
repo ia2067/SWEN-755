@@ -52,7 +52,8 @@ namespace Core
     protected:
         bool _getShutdown();
 
-
+    private:
+        void _runRunner();
     private: // pure virtuals
         virtual void _run() = 0;
 
