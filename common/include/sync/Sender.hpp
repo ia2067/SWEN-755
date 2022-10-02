@@ -10,6 +10,7 @@
 
 namespace Sync
 {
+    class Message;
     /**
      * @brief Will send Sync messages when prompted
      */

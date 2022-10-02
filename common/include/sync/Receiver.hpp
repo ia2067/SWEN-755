@@ -13,6 +13,7 @@
 
 namespace Sync
 {
+    class Message;
     /**
      * @brief A Sync::Receiver which handles Sync::Sender messages
      */
