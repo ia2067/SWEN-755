@@ -2,6 +2,8 @@
 #include <sync/Message.hpp>
 
 #include <iostream>
+
+const int NUM_SYNC_SEGMENTS = 10;
 namespace bip = boost::interprocess;
 
 namespace Sync
@@ -9,8 +11,7 @@ namespace Sync
     Sender::Sender(std::string id, std::string messageQueueName)
     : _state(INIT),
       _id(id),
-      _messageQueueName(messageQueueName),
-      _pMQ(nullptr)
+      _pMQ(std::make_shared<Core::MessageQueue<Message>>(messageQueueName, false))
     { }
 
     Sender::~Sender()
@@ -21,18 +22,18 @@ namespace Sync
     std::string Sender::getMessageQueueName()
     {
         std::lock_guard<std::mutex> lock(_mutex);
-        return _messageQueueName;
+        return _pMQ->getMessageQueueName();
     }
 
-    void Sender::setMessageQueueName(std::string messageQueueName)
+    std::chrono::milliseconds Sender::getSendingInterval()
     {
         std::lock_guard<std::mutex> lock(_mutex);
-        _messageQueueName = messageQueueName;
+        return _sendingInterval;
     }
 
     void Sender::_setState(State_e state)
     {
-        // std::cout << "HBS::State: " << state << std::endl;
+        // std::cout << "Sync::State: " << state << std::endl;
         std::lock_guard<std::mutex> lock(_mutex);
         _state = state;
     }
@@ -45,11 +46,88 @@ namespace Sync
 
     bool Sender::_sendSync()
     {
+        Sync::Message syncm(_id,
+                            _cacheList);
+        
+        if(!_pMQ->sendMessage(syncm))
+        {
+            return false;
+        }
         return true;
+    }
+
+    void Sender::cacheValues(std::list<int> cacheValues)
+    {
+        _cacheList = cacheValues;
     }
 
     void Sender::_run()
     {
+        do 
+        {
+            std::chrono::milliseconds nextSleepTime;
+            switch(_getState())
+            {
+            case INIT:
+                nextSleepTime = _init();
+                break;
+            case JOINING_MQ:
+                nextSleepTime = _joinMQ();
+                break;
+            case IDLE:
+                nextSleepTime = _idle();
+                break;
+            case SENDING:
+                nextSleepTime = _sending();
+                break;
+            default:
+                break;
+            }
+            std::this_thread::sleep_for(nextSleepTime);
+        } while(!_getShutdown());
+
+        _setState(SHUTDOWN);
+    }
+
+    std::chrono::milliseconds Sender::_init()
+    {
+        _setState(JOINING_MQ);
+        return std::chrono::milliseconds(0);
+    }
+
+    std::chrono::milliseconds Sender::_joinMQ()
+    {
+        if(!_pMQ->connect())
+            return std::chrono::milliseconds(250);
+
+        // Success!
         _setState(IDLE);
+        // little pause before first beats
+        return std::chrono::milliseconds(100);
+    }
+
+    std::chrono::milliseconds Sender::_idle()
+    {
+        if(_syncSegment >= NUM_SYNC_SEGMENTS)
+        {
+            _syncSegment = 0;
+            _setState(SENDING);
+            return std::chrono::milliseconds(0);
+        }
+        else
+        {
+            _syncSegment++;
+        }
+
+        // dont want to be 'sleeping' when we are told to shutdown,
+        // so lets break the interval up into 10 bits
+        return getSendingInterval() / NUM_SYNC_SEGMENTS;
+    }
+
+    std::chrono::milliseconds Sender::_sending()
+    {
+        _sendSync();
+        _setState(IDLE);
+        return std::chrono::milliseconds(0);
     }
 } // namespace Sync

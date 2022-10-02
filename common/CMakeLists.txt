@@ -97,7 +97,10 @@ if(Boost_FOUND)
                 ${sync_SOURCES}
     )
     # add boost libs to it
-    target_link_libraries(libsync ${Boost_LIBRARIES} rt)
+    target_link_libraries(libsync 
+                          libcore
+                          ${Boost_LIBRARIES} 
+                          rt)
 else()
     message(SEND_ERROR "BOOST NOT FOUND!")
 endif()

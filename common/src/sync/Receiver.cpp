@@ -8,29 +8,24 @@ namespace Sync
 {
     Receiver::Receiver(std::string messageQueueName)
     : _state(INIT),
-      _messageQueueName(messageQueueName)
+      _pMQ(std::make_shared<Core::MessageQueue<Message>>(messageQueueName, true))
     { }
 
     Receiver::~Receiver()
     {
+        _pMQ->disconnect();
         end();
     }
 
     std::string Receiver::getMessageQueueName()
     {
         std::lock_guard<std::mutex> lock(_mutex);
-        return _messageQueueName;
-    }
-
-    void Receiver::setMessageQueueName(std::string messageQueueName)
-    {
-        std::lock_guard<std::mutex> lock(_mutex);
-        _messageQueueName = messageQueueName;
+        return _pMQ->getMessageQueueName();
     }
 
     void Receiver::_setState(State_e state)
     {
-        // std::cout << "HBR::setState: " << state << std::endl;
+        // std::cout << "SyncRx::setState: " << state << std::endl;
         std::lock_guard<std::mutex> lock(_mutex);
         _state = state;
     }
@@ -43,6 +38,71 @@ namespace Sync
 
     void Receiver::_run()
     {
-        _setState(INIT);
+        do
+        {
+            std::chrono::milliseconds nextSleepTime;
+            switch (_getState())
+            {
+            case INIT:
+                nextSleepTime = _init();
+                break;
+            case CREATING_MQ:
+                nextSleepTime = _createMQ();
+                break;
+            case LISTENING:
+                nextSleepTime = _listen();
+                break;
+            case CHECK_VALUES:
+                nextSleepTime = _checkValues();
+            default:
+                break;
+            }
+            std::this_thread::sleep_for(nextSleepTime);
+        } while (!_getShutdown());
+
+        _setState(SHUTDOWN);        
+    }
+
+    std::chrono::milliseconds Receiver::_init()
+    {
+        _setState(CREATING_MQ);
+        return std::chrono::milliseconds(100);
+    }
+
+    std::chrono::milliseconds Receiver::_createMQ()
+    {
+        if(!_pMQ->connect())
+            return std::chrono::milliseconds(250);
+            
+
+        _setState(LISTENING);
+        return std::chrono::milliseconds(100);
+
+    }
+
+    std::chrono::milliseconds Receiver::_listen()
+    {
+        bool msgsRemain = true;
+        while(msgsRemain)
+        {
+            Sync::Message syncm;
+            if(_pMQ->recvMessage(syncm, msgsRemain))
+            {
+                // std::string id = hbm.getId();
+                // std::chrono::system_clock::time_point tp = hbm.getBeatTime();
+                // _lastBeats[id] = tp;
+                _cacheRxValues = syncm.getVals();
+            }
+        }
+
+        _setState(CHECK_VALUES);
+        return std::chrono::milliseconds(100);
+    }
+
+    std::chrono::milliseconds Receiver::_checkValues()
+    {
+        // Need to bubble up the values to the 'owner'
+        _setState(LISTENING);
+        return std::chrono::milliseconds(100);
     }
 }

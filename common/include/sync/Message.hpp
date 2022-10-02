@@ -4,6 +4,7 @@
 #include <boost/serialization/binary_object.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/list.hpp>
 
 namespace Sync
 {
@@ -12,33 +13,31 @@ namespace Sync
      */
     class Message
     {
-        private: ////serialization
+        private: //serialization
             friend class boost::serialization::access;
-            //float * vals[16];
-            float vals[16];
+            std::list<int> msgVals;
             template<class Archive>
             void serialize(Archive & ar, const unsigned int version)
             {
                 ar & _id;
-                for(int i = 0; i < sizeof(vals); i++)
-                    ar & vals[i];
+                ar & msgVals;
             }
         public:
             Message();
-            Message(std::string id);
             Message(std::string id,
-                    //float* newVals[16]);
-                    float newVals[16]);
+                    std::list<int> newVals);
             virtual ~Message() = default;
+
+        private:
+            //Message() {};
         
         public: 
             std::string getId();
-            //float* getVals();
-            //float[16] getVals();
+            std::list<int> getVals();
 
         private:
             std::string _id;
-            float _msgVals[16];
+            std::list<int> _msgVals;
     };
 } // namespace Sync
 

@@ -3,38 +3,23 @@
 namespace Sync
 {
     Message::Message()
-    : _id("")
-    {
-        for (int i = 0; i < 16; i++)
-        {
-            _msgVals[i] = 0;
-        }
-    }
-
-    Message::Message(std::string id)
-    : Message(id, nullptr)
+    : _id(""),
+      _msgVals(0)
     { }
 
-    // Message::Message(std::string id,
-    //                  float* vals[16])
     Message::Message(std::string id,
-                     float vals[16])
-    : _id(id)
-    {
-        for (int i = 0; i < 16; i++)
-        {
-            _msgVals[i] = vals[i];
-        }
-    }
+                     std::list<int> newVals)
+    : _id(id),
+      _msgVals(newVals)
+    { }
 
     std::string Message::getId()
     {
         return _id;
     }
 
-    //float* Message::getVals()
-    // float[16] Message::getVals()
-    // {
-    //     return _msgVals;
-    // }
+    std::list<int> Message::getVals()
+    {
+        return _msgVals;
+    }
 } // namespace Sync

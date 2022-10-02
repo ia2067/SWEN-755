@@ -2,8 +2,9 @@
 #define SYNC_SENDER_HPP
 
 #include <core/Thread.hpp>
+#include <core/MessageQueue.hpp>
 
-#include <boost/interprocess/ipc/message_queue.hpp>
+#include <boost/serialization/list.hpp>
 
 #include <mutex>
 
@@ -19,7 +20,8 @@ namespace Sync
                 INIT, // This Sync Sender object has been created.
                 JOINING_MQ, // attempting to connect to the messaging queue
                 IDLE, // Waiting to send
-                SENDING // Attempting to send
+                SENDING, // Attempting to send
+                SHUTDOWN
             };
 
         public:
@@ -28,7 +30,9 @@ namespace Sync
 
         public: 
             std::string getMessageQueueName();
-            void setMessageQueueName(std::string);
+            std::chrono::milliseconds getSendingInterval();
+            //void setSendingInterval(std::chrono::milliseconds);
+            void cacheValues(std::list<int> cacheList);
 
         private:
             void _setState(State_e);
@@ -38,12 +42,20 @@ namespace Sync
         private: // Core::thread
             void _run() override;
 
+        private: // methods for various states
+            std::chrono::milliseconds _init();
+            std::chrono::milliseconds _joinMQ();
+            std::chrono::milliseconds _idle();
+            std::chrono::milliseconds _sending();
+
         private:
             std::mutex _mutex;
             State_e _state;
             std::string _id;
-            std::string _messageQueueName;
-            std::shared_ptr<boost::interprocess::message_queue> _pMQ;
+            int _syncSegment;
+            std::chrono::milliseconds _sendingInterval;
+            std::shared_ptr<Core::MessageQueue<Message>> _pMQ;
+            std::list<int> _cacheList;
     };
 } // namespace Sync
 

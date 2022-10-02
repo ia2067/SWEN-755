@@ -2,11 +2,14 @@
 #define SYNC_RECEIVER_HPP
 
 #include <core/Thread.hpp>
+#include <core/MessageQueue.hpp>
 
-#include <boost/interprocess/ipc/message_queue.hpp>
+//#include <boost/signal.hpp>
+//#include <boost/bind.hpp>
 
 #include <string>
 #include <mutex>
+#include <boost/serialization/list.hpp>
 
 namespace Sync
 {
@@ -19,7 +22,9 @@ namespace Sync
             enum State_e {
                 INIT, // This Sync Sender object has been created.
                 CREATING_MQ, // attempting to connect to the messaging queue
-                LISTENING
+                LISTENING,
+                CHECK_VALUES,
+                SHUTDOWN
             };
 
         public:
@@ -28,10 +33,6 @@ namespace Sync
 
         public:
             std::string getMessageQueueName();
-            void setMessageQueueName(std::string);
-
-        public: // Do we need this?
-            //void addSenderId(std::string);
 
         private:
             void _setState(State_e);
@@ -41,9 +42,16 @@ namespace Sync
             void _run() override;
 
         private:
+            std::chrono::milliseconds _init();
+            std::chrono::milliseconds _createMQ();
+            std::chrono::milliseconds _listen();
+            std::chrono::milliseconds _checkValues();
+
+        private:
             std::mutex _mutex;
             State_e _state;
-            std::string _messageQueueName;
+            std::list<int> _cacheRxValues;
+            std::shared_ptr<Core::MessageQueue<Message>> _pMQ;
     };
 } // namespace Sync
 
