@@ -14,7 +14,8 @@ Sensor::Sensor(int sample_size, float scaling_factor,
   _state(INIT),
   sampleVal(0),
   measureVal(0),
-  numRuns(0)
+  numRuns(0), 
+  syncCounter(0)
 {
     srand(time(NULL));
 
@@ -35,7 +36,8 @@ Sensor::Sensor(int sample_size, float scaling_factor,
   _state(INIT),
   sampleVal(0),
   measureVal(0),
-  numRuns(0)
+  numRuns(0),
+  syncCounter(0)
 {
     srand(time(NULL));
 
@@ -152,6 +154,14 @@ std::chrono::milliseconds Sensor::_measure()
 {
     sampleVal = sample(20, 20);
     measureVal = measure();
+
+    std::cout << "Sync Counter: " << syncCounter << std::endl;
+    if(syncCounter++ > 9)
+    {
+        std::cout << "SYNCING" << std::endl;
+        _pSyncSender->cacheValues(_prevSamples);
+        syncCounter = 0;
+    }
 
     // std::cout << "Sample Value: " << sampleVal << " Measure Value: " << measureVal << std::endl;
     // numRuns++;
