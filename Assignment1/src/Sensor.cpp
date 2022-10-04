@@ -6,7 +6,6 @@
 Sensor::Sensor(int sample_size, float scaling_factor, 
                std::string messageQueue, std::string id)
 : _pHeartbeatSender(nullptr),
-  _pSyncSender(nullptr),
   _state(INIT),
   sampleVal(0),
   measureVal(0),
@@ -20,7 +19,6 @@ Sensor::Sensor(int sample_size, float scaling_factor,
     Sensor::messageQueue = messageQueue;
 
     _pHeartbeatSender = std::make_shared<Heartbeat::Sender>(id, messageQueue);
-    _pSyncSender = std::make_shared<Sync::Sender>(id, messageQueue);
 }
 
 
@@ -53,11 +51,6 @@ float Sensor::measure() {
 
     // Get Average based on rolling sum.
     return rolling_sum / (float) Sensor::sample_size * Sensor::scaling_factor;
-}
-
-void Sensor::handleRxValues(std::list<int> rxValues)
-{
-
 }
 
 Sensor::State_e Sensor::_getState()

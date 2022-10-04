@@ -6,7 +6,6 @@
 #include <list>
 
 #include <heartbeat/Sender.hpp>
-#include <sync/Sender.hpp>
 
 /**
  * @brief A Sensor
@@ -69,14 +68,6 @@ public:
      * @return (float) scaled average measurement from all sensor samples.
      */
     float measure();
-
-    /**
-     * @brief: Handle the signal from the sync message receiver
-     * 
-     * @param: rxValues (std::list<int>): The list of rx values to synchronize 
-     * the sensors
-     */
-    void handleRxValues(std::list<int> rxValues);
 
 private:
     // Core::Thread
@@ -147,11 +138,6 @@ private:
      * 
      */
     std::shared_ptr<Heartbeat::Sender> _pHeartbeatSender;
-
-    /**
-     * @brief The child thread which is responsible for sending out sync messages
-     */
-    std::shared_ptr<Sync::Sender> _pSyncSender;
 
     /**
      * @brief the ID of this Sensor

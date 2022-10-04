@@ -4,13 +4,9 @@
 #include <ctime>
 
 #include <heartbeat/Receiver.hpp>
-#include <sync/Receiver.hpp>
 
 #include <boost/process.hpp>
 #include <boost/interprocess/ipc/message_queue.hpp>
-
-#include <boost/signals2.hpp>
-#include <boost/bind.hpp>
 
 int main(int argc, char const *argv[])
 {
@@ -29,11 +25,6 @@ int main(int argc, char const *argv[])
     hr.start();
     hr.addSenderId("primarySensor");
     hr.addSenderId("secondarySensor");
-
-    std::string syncQueue("syncQueue");
-    boost::interprocess::message_queue::remove(syncQueue.c_str());
-
-    
     
     sleep(60);
 
