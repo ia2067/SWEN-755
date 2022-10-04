@@ -206,7 +206,7 @@ private:
 
     int numRuns;
 
-    int syncCounter;
+    int _syncCounter;
 };
 
 } // namespace Assignment 2
