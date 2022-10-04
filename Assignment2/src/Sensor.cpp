@@ -4,9 +4,11 @@
 
 
 Sensor::Sensor(int sample_size, float scaling_factor, 
-               std::string messageQueue, std::string id)
+               std::string messageQueue, std::string id,
+               std::shared_ptr<Sync::Sender> syncSender)
 : _pHeartbeatSender(nullptr),
-  _pSyncSender(nullptr),
+  _pSyncSender(syncSender),
+  _pSyncReceiver(nullptr),
   _state(INIT),
   sampleVal(0),
   measureVal(0),
@@ -20,7 +22,27 @@ Sensor::Sensor(int sample_size, float scaling_factor,
     Sensor::messageQueue = messageQueue;
 
     _pHeartbeatSender = std::make_shared<Heartbeat::Sender>(id, messageQueue);
-    _pSyncSender = std::make_shared<Sync::Sender>(id, messageQueue);
+}
+
+Sensor::Sensor(int sample_size, float scaling_factor, 
+               std::string messageQueue, std::string id,
+               std::shared_ptr<Sync::Receiver> syncReceiver)
+: _pHeartbeatSender(nullptr),
+  _pSyncSender(nullptr),
+  _pSyncReceiver(syncReceiver),
+  _state(INIT),
+  sampleVal(0),
+  measureVal(0),
+  numRuns(0)
+{
+    srand(time(NULL));
+
+    Sensor::sample_size = sample_size;
+    Sensor::scaling_factor = scaling_factor;
+    Sensor::id = id;
+    Sensor::messageQueue = messageQueue;
+
+    _pHeartbeatSender = std::make_shared<Heartbeat::Sender>(id, messageQueue);
 }
 
 

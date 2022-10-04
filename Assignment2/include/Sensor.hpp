@@ -46,9 +46,24 @@ public:
      * @param scaling_factor (float): Factor to use when scaling sensor measurements.
      * @param messageQueue (string): String ID for our message queue.
      * @param id (string): String ID for our heartbeat sender.
+     * @param syncSender (shared pointer): Shared pointer to the syncSender.
      */
     Sensor(int sample_size, float scaling_factor, 
-           std::string messageQueue, std::string id);
+           std::string messageQueue, std::string id,
+           std::shared_ptr<Sync::Sender> syncSender);
+
+    /**
+     * @brief Construct a new Sensor object with a sync sender
+     * 
+     * @param sample_size (int): Number of samples to average to get measurement.
+     * @param scaling_factor (float): Factor to use when scaling sensor measurements.
+     * @param messageQueue (string): String ID for our message queue.
+     * @param id (string): String ID for our heartbeat sender.
+     * @param syncReceiver (shared pointer): Shared pointer to the syncReceiver.
+     */
+    Sensor(int sample_size, float scaling_factor, 
+           std::string messageQueue, std::string id,
+           std::shared_ptr<Sync::Receiver> syncReceiver);
 
     /**
      * @brief: Take a single random sample (measurement) of the sensor.
@@ -149,9 +164,14 @@ private:
     std::shared_ptr<Heartbeat::Sender> _pHeartbeatSender;
 
     /**
-     * @brief The child thread which is responsible for sending out sync messages
+     * @brief (optional) The child thread which is responsible for sending out sync messages
      */
     std::shared_ptr<Sync::Sender> _pSyncSender;
+
+    /**
+     * @brief (optional) The child thread which is responsible for receiving sync messages
+     */
+    std::shared_ptr<Sync::Sender> _pSyncReceiver;
 
     /**
      * @brief the ID of this Sensor
