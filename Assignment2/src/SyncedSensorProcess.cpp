@@ -1,6 +1,8 @@
 // boost headers
 #include <boost/program_options.hpp>
 #include <boost/process.hpp>
+#include <boost/signals2.hpp>
+#include <boost/bind.hpp>
 
 // std headers
 #include <iostream>
