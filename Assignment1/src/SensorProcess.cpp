@@ -31,7 +31,7 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
-    Sensor sensor(size, scaleFactor, mq, id);
+    Assignment1::Sensor sensor(size, scaleFactor, mq, id);
     sensor.start();
 
     while(true) {}

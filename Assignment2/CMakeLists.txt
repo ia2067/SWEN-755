@@ -3,15 +3,15 @@ project(Assignment2 VERSION 1.0.0)
 
 
 include_directories(${PROJECT_SOURCE_DIR}/../common/include)
-set(Assignment1_Libs
+set(Assignment2_Libs
     libcore
     libheartbeat
     libsync)
 
 set(sensor_process_exe_name syncedSensorProcess)
 set(sensor_process_SOURCES
-    src/Sensor.cpp
-    src/SensorProcess.cpp
+    src/SyncedSensor.cpp
+    src/SyncedSensorProcess.cpp
 )
 
 set(Boost_ProgramLibs
@@ -29,8 +29,14 @@ if(Boost_FOUND)
     target_link_libraries(${sensor_process_exe_name}
                             ${Boost_LIBRARIES})
     target_link_libraries(${sensor_process_exe_name}
-                            ${Assignment1_Libs}) 
+                            ${Assignment2_Libs}) 
 endif()
+
+target_include_directories(
+    ${sensor_process_exe_name}
+    PRIVATE
+    ${PROJECT_SOURCE_DIR}/include
+)
 
 
 set(main_exe_name ${PROJECT_NAME})
@@ -40,7 +46,7 @@ set(main_SOURCES
 
 add_executable(${main_exe_name} ${main_SOURCES})
 target_link_libraries(${main_exe_name}
-                      ${Assignment1_Libs})
+                      ${Assignment2_Libs})
 
 target_include_directories(
     ${main_exe_name}

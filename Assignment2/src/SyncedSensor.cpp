@@ -1,7 +1,9 @@
 #include <stdlib.h>   //rand
-#include <Sensor.hpp>
+#include <SyncedSensor.hpp>
 #include <time.h>
 
+namespace Assignment2
+{
 
 Sensor::Sensor(int sample_size, float scaling_factor, 
                std::string messageQueue, std::string id,
@@ -175,3 +177,5 @@ std::chrono::milliseconds Sensor::_failure()
     _setState(DEAD);
     return std::chrono::milliseconds(0);
 }
+
+} // namespace Assignment2

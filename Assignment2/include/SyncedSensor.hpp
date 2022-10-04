@@ -7,6 +7,10 @@
 
 #include <heartbeat/Sender.hpp>
 #include <sync/Sender.hpp>
+#include <sync/Receiver.hpp>
+
+namespace Assignment2
+{
 
 /**
  * @brief A Sensor
@@ -171,7 +175,7 @@ private:
     /**
      * @brief (optional) The child thread which is responsible for receiving sync messages
      */
-    std::shared_ptr<Sync::Sender> _pSyncReceiver;
+    std::shared_ptr<Sync::Receiver> _pSyncReceiver;
 
     /**
      * @brief the ID of this Sensor
@@ -203,5 +207,6 @@ private:
     int numRuns;
 };
 
+} // namespace Assignment 2
 
 #endif // !SENSOR_HPP

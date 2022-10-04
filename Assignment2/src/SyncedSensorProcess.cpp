@@ -5,7 +5,7 @@
 // std headers
 #include <iostream>
 
-#include <Sensor.hpp>
+#include <SyncedSensor.hpp>
 
 int main(int argc, char const *argv[])
 {
@@ -31,11 +31,11 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
-    Sensor sensor(size, scaleFactor, mq, id);
-    sensor.start();
+    // Assignment2::Sensor sensor(size, scaleFactor, mq, id);
+    // sensor.start();
 
     while(true) {}
 
-    sensor.end();
+    // sensor.end();
     return 0;
 }

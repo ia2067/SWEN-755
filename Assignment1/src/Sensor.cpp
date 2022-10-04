@@ -2,6 +2,8 @@
 #include <Sensor.hpp>
 #include <time.h>
 
+namespace Assignment1
+{
 
 Sensor::Sensor(int sample_size, float scaling_factor, 
                std::string messageQueue, std::string id)
@@ -146,3 +148,6 @@ std::chrono::milliseconds Sensor::_failure()
     _setState(DEAD);
     return std::chrono::milliseconds(0);
 }
+
+    
+} // Assignment1

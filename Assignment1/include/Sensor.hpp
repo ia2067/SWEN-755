@@ -7,6 +7,9 @@
 
 #include <heartbeat/Sender.hpp>
 
+namespace Assignment1
+{
+
 /**
  * @brief A Sensor
  * 
@@ -169,5 +172,7 @@ private:
     int numRuns;
 };
 
+    
+} // namespace Assignment1
 
 #endif // !SENSOR_HPP
