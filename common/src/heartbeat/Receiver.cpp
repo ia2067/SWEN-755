@@ -158,6 +158,7 @@ std::chrono::milliseconds Receiver::_checkPulses()
         {
 
             _deadIds.insert(id);
+            sigNewDead(id); //signals up that someone died!
         }
         else
         {
