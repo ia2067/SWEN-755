@@ -8,6 +8,30 @@ set(Assignment1_Libs
     libheartbeat
     libsync)
 
+set(sensor_process_exe_name syncedSensorProcess)
+set(sensor_process_SOURCES
+    src/Sensor.cpp
+    src/SensorProcess.cpp
+)
+
+set(Boost_ProgramLibs
+    program_options
+)
+
+find_package(Boost 1.71.0 COMPONENTS ${Boost_ProgramLibs})
+
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+
+    add_executable(${sensor_process_exe_name} 
+                    ${sensor_process_SOURCES})
+
+    target_link_libraries(${sensor_process_exe_name}
+                            ${Boost_LIBRARIES})
+    target_link_libraries(${sensor_process_exe_name}
+                            ${Assignment1_Libs}) 
+endif()
+
 
 set(main_exe_name ${PROJECT_NAME})
 set(main_SOURCES

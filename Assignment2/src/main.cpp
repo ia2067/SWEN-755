@@ -17,9 +17,9 @@ int main(int argc, char const *argv[])
     boost::interprocess::message_queue::remove(mqn.c_str());
 
     namespace bp = boost::process;
-    bp::child primarySensorProcess("./sensorProcess --size 10 --scaleFactor 2.0 --mq myQueue --id primarySensor");
+    bp::child primarySensorProcess("./syncedSensorProcess --size 10 --scaleFactor 2.0 --mq myQueue --id primarySensor");
     sleep(1);
-    bp::child secondarySensorProcess("./sensorProcess --size 10 --scaleFactor 2.0 --mq myQueue --id secondarySensor");
+    bp::child secondarySensorProcess("./syncedSensorProcess --size 10 --scaleFactor 2.0 --mq myQueue --id secondarySensor");
 
     Heartbeat::Receiver hr(mqn, std::chrono::milliseconds(50), std::chrono::milliseconds(3000));
 
