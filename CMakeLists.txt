@@ -35,6 +35,7 @@ enable_testing()
 add_subdirectory(common)
 add_subdirectory(firstCmakeProject)
 add_subdirectory(Assignment1)
+add_subdirectory(Assignment2)
 
 
 option(BUILD_DOC "Build Documentation" ON)
