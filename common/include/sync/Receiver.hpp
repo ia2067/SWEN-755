@@ -19,7 +19,7 @@ namespace Sync
      */
     class Receiver : public Core::Thread
     {
-        private:
+        public:
             enum State_e {
                 INIT, // This Sync Sender object has been created.
                 CREATING_MQ, // attempting to connect to the messaging queue
@@ -34,13 +34,13 @@ namespace Sync
 
         public:
             std::string getMessageQueueName();
+            State_e getState();
 
         public:
             boost::signals2::signal<void (std::list<int> ())> RxSignal;
 
         private:
             void _setState(State_e);
-            State_e _getState();
 
         private: //Core::Thread
             void _run() override;

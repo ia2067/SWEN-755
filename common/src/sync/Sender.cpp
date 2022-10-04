@@ -38,7 +38,7 @@ namespace Sync
         _state = state;
     }
 
-    Sender::State_e Sender::_getState()
+    Sender::State_e Sender::getState()
     {
         std::lock_guard<std::mutex> lock(_mutex);
         return _state;
@@ -66,7 +66,7 @@ namespace Sync
         do 
         {
             std::chrono::milliseconds nextSleepTime;
-            switch(_getState())
+            switch(getState())
             {
             case INIT:
                 nextSleepTime = _init();

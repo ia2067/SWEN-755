@@ -16,7 +16,7 @@ namespace Sync
      */
     class Sender : public Core::Thread
     {
-        private:
+        public:
             enum State_e {
                 INIT, // This Sync Sender object has been created.
                 JOINING_MQ, // attempting to connect to the messaging queue
@@ -32,12 +32,11 @@ namespace Sync
         public: 
             std::string getMessageQueueName();
             std::chrono::milliseconds getSendingInterval();
-            //void setSendingInterval(std::chrono::milliseconds);
+            State_e getState();
             void cacheValues(std::list<int> cacheList);
 
         private:
             void _setState(State_e);
-            State_e _getState();
             bool _sendSync();
 
         private: // Core::thread

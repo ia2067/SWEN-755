@@ -6,3 +6,6 @@ include(BoostTestHelpers.cmake)
 
 add_boost_test(heartbeat/testHeartbeat.cpp
                libheartbeat)
+
+add_boost_test(sync/testSync.cpp
+               libsync)
