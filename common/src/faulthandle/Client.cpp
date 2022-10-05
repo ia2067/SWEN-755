@@ -18,17 +18,27 @@ namespace FaultHandle
         // scope lock
         std::lock_guard<std::mutex> lock(_mutex);
         if(!_pMQ->connect())
-        {
+        {   
+            std::cout << "CLIENT COULDNT CONNECT TO MQ" << std::endl;
             msg = BAD_MSG;
             return false;
         }
-        else if(!_send(msg))
+        
+        //CLEAR THE QUEUE
+        bool areMoreMsgs = true;
+        Message fakeMsg; 
+        while(areMoreMsgs && _pMQ->recvMessage(fakeMsg, areMoreMsgs))
+        { }
+
+        if(!_send(msg))
         {
+            std::cout << "CLIENT COULDNT SEND MESSAGE" << std::endl;
             msg = BAD_MSG;
             return false;
         }
         else if(!_recieve(msg))
         {
+            std::cout << "CLIENT COULDNT RECV MESSAGE" << std::endl;
             msg = BAD_MSG;
             return false;
         }
@@ -44,6 +54,7 @@ namespace FaultHandle
 
         if(!_pMQ->timedRecvMessage(msg, std::chrono::milliseconds(1000)))
         {
+            std::cout << "CLIENT RX TIMEOUT!" << std::endl;
             return false;
         }
 
@@ -60,7 +71,8 @@ namespace FaultHandle
                 expectedMsgType = BAD_MESSAGE_TYPE;
                 break;
         }
-        
+        std::cout << "  expected message was : " << expectedMsgType << std::endl; 
+        std::cout << "Rx-ed message was type : "<< msg.getMessageType() << std::endl;
         return (expectedMsgType == msg.getMessageType());    
     }
 

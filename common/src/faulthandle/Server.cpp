@@ -47,12 +47,14 @@ namespace FaultHandle
     }
     std::chrono::milliseconds Server::_init()
     {
+        std::cout << "SERVER INIT" << std::endl;
         _setState(CREATING_MQ);
 
         return std::chrono::milliseconds(0);
     }
     std::chrono::milliseconds Server::_createMQ()
     {
+        std::cout << "SERVER GOT CREATE MQ" << std::endl;
         if(!_pMQ->connect())
             return std::chrono::milliseconds(250);
             
@@ -65,6 +67,7 @@ namespace FaultHandle
         Message msg;
         if(_pMQ->timedRecvMessage(msg, std::chrono::milliseconds(250)))
         {
+            std::cout << "SERVER GOT A MESSAGE" << std::endl;
             switch(msg.getMessageType())
             {
                 case CMD_GETDATA:
@@ -83,6 +86,7 @@ namespace FaultHandle
 
     void Server::_handleGetData()
     {
+        std::cout << "SERVER GOT DATA REQ" << std::endl;
         std::list<int> data = sigGetData().get();
         Message rsp(RSP_GETDATA,
                     data);
@@ -92,6 +96,7 @@ namespace FaultHandle
     }
     void Server::_handleWakeUp()
     {
+        std::cout << "SERVER GOT WAKEUP" << std::endl;
         sigWakeUp();
         Message rsp(RSP_WAKEUP,
                     {});

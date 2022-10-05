@@ -9,7 +9,7 @@
 
 int main(int argc, char const *argv[])
 {
-    std::string hbMq, id, syncRx, syncTx;
+    std::string hbMq, fhMq, id, syncRx, syncTx;
     int size;
     float scaleFactor;
 
@@ -20,6 +20,7 @@ int main(int argc, char const *argv[])
         ("size", po::value<int>(&size), "set sample size")
         ("scaleFactor", po::value<float>(&scaleFactor), "set scale factor")
         ("hbMq", po::value<std::string>(&hbMq), "set heartbeat messaging queue name")
+        ("fhMq", po::value<std::string>(&fhMq), "set heartbeat messaging queue name")
         ("id", po::value<std::string>(&id), "set sensor id")
         ("syncTx", po::value<std::string>(&syncTx), "set syncTx queue name (null if a sync receiver)")
         ("syncRx", po::value<std::string>(&syncRx), "set syncRx queue name (null if a sync sender)");
@@ -28,7 +29,7 @@ int main(int argc, char const *argv[])
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
 
-    if(vm.count("help") || !vm.count("hbMq") || !vm.count("id") || 
+    if(vm.count("help") || !vm.count("hbMq") || !vm.count("fhMq") || !vm.count("id") || 
        !vm.count("syncTx") || !vm.count("syncRx")) 
     {
         std::cout << desc << std::endl;
@@ -38,7 +39,7 @@ int main(int argc, char const *argv[])
     if(syncTx != "null")
     {
         std::shared_ptr<Sync::Sender> sender = std::make_shared<Sync::Sender>(syncTx);
-        Assignment2::Sensor primarySensor(size, scaleFactor, hbMq, id, 
+        Assignment2::Sensor primarySensor(size, scaleFactor, hbMq, fhMq, id, 
                                           sender);
         
 
@@ -50,7 +51,7 @@ int main(int argc, char const *argv[])
     else if (syncRx != "null")
     {
         std::shared_ptr<Sync::Receiver> receiver = std::make_shared<Sync::Receiver>(syncRx);
-        Assignment2::Sensor secondarySensor(size, scaleFactor, hbMq, id,
+        Assignment2::Sensor secondarySensor(size, scaleFactor, hbMq, fhMq, id,
                                             receiver);
         secondarySensor.start();
         while(true) {}

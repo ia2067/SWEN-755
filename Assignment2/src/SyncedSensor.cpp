@@ -7,7 +7,7 @@ namespace Assignment2
 {
 
 Sensor::Sensor(int sample_size, float scaling_factor, 
-               std::string messageQueue, std::string id,
+               std::string hbQueueName, std::string fhQueueName, std::string id,
                std::shared_ptr<Sync::Sender> syncSender)
 : _pHeartbeatSender(nullptr),
   _pSyncSender(syncSender),
@@ -23,17 +23,16 @@ Sensor::Sensor(int sample_size, float scaling_factor,
     Sensor::sample_size = sample_size;
     Sensor::scaling_factor = scaling_factor;
     Sensor::id = id;
-    Sensor::messageQueue = messageQueue;
 
-    _pHeartbeatSender = std::make_shared<Heartbeat::Sender>(id, messageQueue);
-    _pHandleServerfault = std::make_shared<FaultHandle::Server>(messageQueue);
+    _pHeartbeatSender = std::make_shared<Heartbeat::Sender>(id, hbQueueName);
 
+    _pHandleServerfault = std::make_shared<FaultHandle::Server>(fhQueueName);
     _pHandleServerfault->sigWakeUp.connect(boost::bind(&Sensor::handleWakeup, this));
     _pHandleServerfault->sigGetData.connect(boost::bind(&Sensor::handleGetData, this));
 }
 
 Sensor::Sensor(int sample_size, float scaling_factor, 
-               std::string messageQueue, std::string id,
+               std::string hbQueueName, std::string fhQueueName, std::string id,
                std::shared_ptr<Sync::Receiver> syncReceiver)
 : _pHeartbeatSender(nullptr),
   _pSyncSender(nullptr),
@@ -49,10 +48,13 @@ Sensor::Sensor(int sample_size, float scaling_factor,
     Sensor::sample_size = sample_size;
     Sensor::scaling_factor = scaling_factor;
     Sensor::id = id;
-    Sensor::messageQueue = messageQueue;
 
-    _pHeartbeatSender = std::make_shared<Heartbeat::Sender>(id, messageQueue);
+    _pHeartbeatSender = std::make_shared<Heartbeat::Sender>(id, hbQueueName);
     _pSyncReceiver->RxSignal.connect(boost::bind(&Sensor::handleRxValues, this, boost::placeholders::_1));
+
+    _pHandleServerfault = std::make_shared<FaultHandle::Server>(fhQueueName);
+    _pHandleServerfault->sigWakeUp.connect(boost::bind(&Sensor::handleWakeup, this));
+    _pHandleServerfault->sigGetData.connect(boost::bind(&Sensor::handleGetData, this));
 }
 
 
@@ -94,7 +96,12 @@ void Sensor::handleRxValues(std::list<int> rxValues)
 
 void Sensor::handleWakeup()
 {
+    active = true;
+}
 
+std::list<int> Sensor::handleGetData()
+{
+    return _prevSamples;
 }
 
 Sensor::State_e Sensor::_getState()
@@ -157,7 +164,7 @@ std::chrono::milliseconds Sensor::_init()
     if (_pSyncReceiver)
         _pSyncReceiver->start();
 
-    _pFaultHandle->start();
+    _pHandleServerfault->start();
     
     // Start Sensor as inactive (wait until told to start).
     active = false;
@@ -208,7 +215,7 @@ std::chrono::milliseconds Sensor::_measure()
 
 std::chrono::milliseconds Sensor::_inactive()
 {
-    std::cout << "SENSOR INACTIVE: " << Sensor::id << std::endl;
+    // std::cout << "SENSOR INACTIVE: " << Sensor::id << std::endl;
     
     // Sensor should be taken out of inactive as requested.
     if (active)
@@ -224,7 +231,7 @@ std::chrono::milliseconds Sensor::_failure()
     // std::cout << "Num Runs: " << numRuns << std::endl;
     std::cout << "SENSOR FAILURE: " << Sensor::id << std::endl;
     _pHeartbeatSender->end();
-    _pFaultHandle->end();
+    _pHandleServerfault->end();
     _setState(DEAD);
     return std::chrono::milliseconds(100);
 }

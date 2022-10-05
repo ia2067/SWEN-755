@@ -8,7 +8,7 @@
 #include <heartbeat/Sender.hpp>
 #include <sync/Sender.hpp>
 #include <sync/Receiver.hpp>
-#include <faulthandle/Sender.hpp>
+#include <faulthandle/Server.hpp>
 
 namespace Assignment2
 {
@@ -50,12 +50,13 @@ public:
      * 
      * @param sample_size (int): Number of samples to average to get measurement.
      * @param scaling_factor (float): Factor to use when scaling sensor measurements.
-     * @param messageQueue (string): String ID for our message queue.
+     * @param hbQueueName (string): String ID for our heartbeat message queue.
+     * @param fhQueueName (string): String ID for our fault handling message queue.
      * @param id (string): String ID for our heartbeat sender.
      * @param syncSender (shared pointer): Shared pointer to the syncSender.
      */
     Sensor(int sample_size, float scaling_factor, 
-           std::string messageQueue, std::string id,
+           std::string hbQueueName, std::string fhQueueName, std::string id,
            std::shared_ptr<Sync::Sender> syncSender);
 
     /**
@@ -63,12 +64,13 @@ public:
      * 
      * @param sample_size (int): Number of samples to average to get measurement.
      * @param scaling_factor (float): Factor to use when scaling sensor measurements.
-     * @param messageQueue (string): String ID for our message queue.
+     * @param hbQueueName (string): String ID for our heartbeat message queue.
+     * @param fhQueueName (string): String ID for our fault handling message queue.
      * @param id (string): String ID for our heartbeat sender.
      * @param syncReceiver (shared pointer): Shared pointer to the syncReceiver.
      */
     Sensor(int sample_size, float scaling_factor, 
-           std::string messageQueue, std::string id,
+           std::string hbQueueName, std::string fhQueueName, std::string id,
            std::shared_ptr<Sync::Receiver> syncReceiver);
 
     /**
@@ -98,6 +100,9 @@ public:
      * the sensors
      */
     void handleRxValues(std::list<int> rxValues);
+
+    void handleWakeup();
+    std::list<int> handleGetData();
 
 private:
     // Core::Thread
@@ -179,7 +184,7 @@ private:
     /* @brief The child thread which is responsible for receiving commands
      * 
      */
-    std::shared_ptr<Heartbeat::Sender> _pHandleServerfault;
+    std::shared_ptr<FaultHandle::Server> _pHandleServerfault;
     /**
      * @brief (optional) The child thread which is responsible for sending out sync messages
      */
