@@ -9,7 +9,7 @@
 
 int main(int argc, char const *argv[])
 {
-    std::string mq, id;
+    std::string hbMq, id, syncRx, syncTx;
     int size;
     float scaleFactor;
 
@@ -19,22 +19,54 @@ int main(int argc, char const *argv[])
         ("help", "produce help message")
         ("size", po::value<int>(&size), "set sample size")
         ("scaleFactor", po::value<float>(&scaleFactor), "set scale factor")
-        ("mq", po::value<std::string>(&mq), "set messaging queue name")
-        ("id", po::value<std::string>(&id), "set sensor id");
+        ("hbMq", po::value<std::string>(&hbMq), "set heartbeat messaging queue name")
+        ("id", po::value<std::string>(&id), "set sensor id")
+        ("syncTx", po::value<std::string>(&syncTx), "set syncTx queue name (null if a sync receiver)")
+        ("syncRx", po::value<std::string>(&syncRx), "set syncRx queue name (null if a sync sender)");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
 
-    if(vm.count("help") || !vm.count("mq") || !vm.count("id")) {
+    if(vm.count("help") || !vm.count("hbMq") || !vm.count("id") || 
+       !vm.count("syncTx") || !vm.count("syncRx")) 
+    {
         std::cout << desc << std::endl;
         return -1;
+    }
+
+    if(syncTx != "null")
+    {
+        std::shared_ptr<Sync::Sender> sender = std::make_shared<Sync::Sender>(syncTx);
+        Assignment2::Sensor primarySensor(size, scaleFactor, hbMq, id, 
+                                          sender);
+        
+
+        primarySensor.start();
+        while(true) {}
+
+        primarySensor.end();
+    }
+    else if (syncRx != "null")
+    {
+        std::shared_ptr<Sync::Receiver> receiver = std::make_shared<Sync::Receiver>(syncRx);
+        Assignment2::Sensor secondarySensor(size, scaleFactor, hbMq, id,
+                                            receiver);
+        secondarySensor.start();
+        while(true) {}
+
+        secondarySensor.end();
+    }
+    else
+    {
+        std::cout << "FATAL: You tried to create a sensor without a receiver or a sender" << std::endl;
+        return 1;
     }
 
     // Assignment2::Sensor sensor(size, scaleFactor, mq, id);
     // sensor.start();
 
-    while(true) {}
+    //while(true) {}
 
     // sensor.end();
     return 0;

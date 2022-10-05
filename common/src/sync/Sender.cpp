@@ -8,14 +8,14 @@ namespace bip = boost::interprocess;
 
 namespace Sync
 {
-    Sender::Sender(std::string id, std::string messageQueueName)
+    Sender::Sender(std::string messageQueueName)
     : _state(INIT),
-      _id(id),
       _pMQ(std::make_shared<Core::MessageQueue<Message>>(messageQueueName, false))
     { }
 
     Sender::~Sender()
     {
+        _pMQ->disconnect();
         end();
     }
 
@@ -33,7 +33,7 @@ namespace Sync
 
     void Sender::_setState(State_e state)
     {
-        // std::cout << "Sync::State: " << state << std::endl;
+        //std::cout << "Sync::State: " << state << std::endl;
         std::lock_guard<std::mutex> lock(_mutex);
         _state = state;
     }
@@ -46,8 +46,7 @@ namespace Sync
 
     bool Sender::_sendSync()
     {
-        Sync::Message syncm(_id,
-                            _cacheList);
+        Sync::Message syncm(_cacheList);
         
         if(!_pMQ->sendMessage(syncm))
         {
@@ -58,6 +57,7 @@ namespace Sync
 
     void Sender::cacheValues(std::list<int> cacheValues)
     {
+        //std::cout << "CACHE VALUES" << std::endl;
         _cacheList = cacheValues;
     }
 
@@ -110,6 +110,7 @@ namespace Sync
     {
         if(_syncSegment >= NUM_SYNC_SEGMENTS)
         {
+            //std::cout << "SEND SYNC MESSAGE" << std::endl;
             _syncSegment = 0;
             _setState(SENDING);
             return std::chrono::milliseconds(0);

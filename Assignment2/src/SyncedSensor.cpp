@@ -1,6 +1,7 @@
 #include <stdlib.h>   //rand
 #include <SyncedSensor.hpp>
 #include <time.h>
+#include <boost/bind.hpp>
 
 namespace Assignment2
 {
@@ -14,7 +15,8 @@ Sensor::Sensor(int sample_size, float scaling_factor,
   _state(INIT),
   sampleVal(0),
   measureVal(0),
-  numRuns(0)
+  numRuns(0), 
+  _syncCounter(0)
 {
     srand(time(NULL));
 
@@ -35,7 +37,8 @@ Sensor::Sensor(int sample_size, float scaling_factor,
   _state(INIT),
   sampleVal(0),
   measureVal(0),
-  numRuns(0)
+  numRuns(0),
+  _syncCounter(0)
 {
     srand(time(NULL));
 
@@ -45,6 +48,7 @@ Sensor::Sensor(int sample_size, float scaling_factor,
     Sensor::messageQueue = messageQueue;
 
     _pHeartbeatSender = std::make_shared<Heartbeat::Sender>(id, messageQueue);
+    _pSyncReceiver->RxSignal.connect(boost::bind(&Sensor::handleRxValues, this, _1));
 }
 
 
@@ -81,7 +85,7 @@ float Sensor::measure() {
 
 void Sensor::handleRxValues(std::list<int> rxValues)
 {
-
+    _prevSamples = rxValues;
 }
 
 Sensor::State_e Sensor::_getState()
@@ -133,6 +137,13 @@ void Sensor::_run() {
 std::chrono::milliseconds Sensor::_init()
 {
     _pHeartbeatSender->start();
+
+    if (_pSyncSender)
+        _pSyncSender->start();
+
+    if (_pSyncReceiver)
+        _pSyncReceiver->start();
+
     _setState(PREFILL);
     return std::chrono::milliseconds(0);
 }
@@ -152,6 +163,13 @@ std::chrono::milliseconds Sensor::_measure()
 {
     sampleVal = sample(20, 20);
     measureVal = measure();
+
+    if(_syncCounter++ > 9 && _pSyncSender)
+    {
+        std::cout << "SYNCING" << std::endl;
+        _pSyncSender->cacheValues(_prevSamples);
+        _syncCounter = 0;
+    }
 
     // std::cout << "Sample Value: " << sampleVal << " Measure Value: " << measureVal << std::endl;
     // numRuns++;

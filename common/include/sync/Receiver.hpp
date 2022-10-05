@@ -4,8 +4,8 @@
 #include <core/Thread.hpp>
 #include <core/MessageQueue.hpp>
 
-// #include <boost/signals2.hpp>
-// #include <boost/bind.hpp>
+#include <boost/signals2.hpp>
+#include <boost/bind.hpp>
 
 #include <string>
 #include <mutex>
@@ -36,8 +36,8 @@ namespace Sync
             std::string getMessageQueueName();
             State_e getState();
 
-        // public:
-        //     boost::signals2::signal<void (std::list<int> ())> RxSignal;
+        public:
+            boost::signals2::signal<void (std::list<int>)> RxSignal;
 
         private:
             void _setState(State_e);

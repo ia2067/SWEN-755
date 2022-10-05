@@ -205,6 +205,8 @@ private:
     std::list<int> _prevSamples;
 
     int numRuns;
+
+    int _syncCounter;
 };
 
 } // namespace Assignment 2

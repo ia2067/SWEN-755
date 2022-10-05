@@ -88,10 +88,9 @@ namespace Sync
             Sync::Message syncm;
             if(_pMQ->recvMessage(syncm, msgsRemain))
             {
-                // std::string id = hbm.getId();
-                // std::chrono::system_clock::time_point tp = hbm.getBeatTime();
-                // _lastBeats[id] = tp;
+                //std::cout << "RECEIVED SYNC MESSAGE" << std::endl;
                 _cacheRxValues = syncm.getVals();
+                RxSignal(_cacheRxValues);
             }
         }
 
