@@ -1,7 +1,7 @@
 #include <stdlib.h>   //rand
 #include <SyncedSensor.hpp>
 #include <time.h>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 
 namespace Assignment2
 {
@@ -48,7 +48,7 @@ Sensor::Sensor(int sample_size, float scaling_factor,
     Sensor::messageQueue = messageQueue;
 
     _pHeartbeatSender = std::make_shared<Heartbeat::Sender>(id, messageQueue);
-    _pSyncReceiver->RxSignal.connect(boost::bind(&Sensor::handleRxValues, this, _1));
+    _pSyncReceiver->RxSignal.connect(boost::bind(&Sensor::handleRxValues, this, boost::placeholders::_1));
 }
 
 

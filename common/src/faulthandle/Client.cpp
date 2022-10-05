@@ -42,7 +42,7 @@ namespace FaultHandle
     {
         auto oldMsgType = msg.getMessageType();
 
-        if(!_pMQ->timedRecvMessage(msg, std::chrono::milliseconds(1000))
+        if(!_pMQ->timedRecvMessage(msg, std::chrono::milliseconds(1000)))
         {
             return false;
         }
@@ -61,7 +61,7 @@ namespace FaultHandle
                 break;
         }
         
-        return ((counter != NUM_CHECKS) && (expectedMsgType == msg.getMessageType()));    
+        return (expectedMsgType == msg.getMessageType());    
     }
 
     

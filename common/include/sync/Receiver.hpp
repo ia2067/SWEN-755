@@ -4,8 +4,7 @@
 #include <core/Thread.hpp>
 #include <core/MessageQueue.hpp>
 
-#include <boost/signals2.hpp>
-#include <boost/bind.hpp>
+#include <boost/signals2/signal.hpp>
 
 #include <string>
 #include <mutex>
