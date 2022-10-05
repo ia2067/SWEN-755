@@ -15,6 +15,7 @@ namespace Sync
 
     Sender::~Sender()
     {
+        _pMQ->disconnect();
         end();
     }
 
@@ -32,7 +33,7 @@ namespace Sync
 
     void Sender::_setState(State_e state)
     {
-        // std::cout << "Sync::State: " << state << std::endl;
+        //std::cout << "Sync::State: " << state << std::endl;
         std::lock_guard<std::mutex> lock(_mutex);
         _state = state;
     }
@@ -56,6 +57,7 @@ namespace Sync
 
     void Sender::cacheValues(std::list<int> cacheValues)
     {
+        //std::cout << "CACHE VALUES" << std::endl;
         _cacheList = cacheValues;
     }
 
@@ -108,7 +110,7 @@ namespace Sync
     {
         if(_syncSegment >= NUM_SYNC_SEGMENTS)
         {
-            std::cout << "SEND SYNC MESSAGE" << std::endl;
+            //std::cout << "SEND SYNC MESSAGE" << std::endl;
             _syncSegment = 0;
             _setState(SENDING);
             return std::chrono::milliseconds(0);

@@ -23,9 +23,6 @@ int main(int argc, char const *argv[])
         ("id", po::value<std::string>(&id), "set sensor id")
         ("syncTx", po::value<std::string>(&syncTx), "set syncTx queue name (null if a sync receiver)")
         ("syncRx", po::value<std::string>(&syncRx), "set syncRx queue name (null if a sync sender)");
-        // Need to add options for sync message stuff, using correct
-        // ctor for sensors based on sender/receiver
-        // Also renaming to have hb/sync non-overlap
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -40,10 +37,11 @@ int main(int argc, char const *argv[])
 
     if(syncTx != "null")
     {
-        std::cout << "Create sync sensor sender" << std::endl;
         std::shared_ptr<Sync::Sender> sender = std::make_shared<Sync::Sender>(syncTx);
         Assignment2::Sensor primarySensor(size, scaleFactor, hbMq, id, 
                                           sender);
+        
+
         primarySensor.start();
         while(true) {}
 
@@ -51,7 +49,6 @@ int main(int argc, char const *argv[])
     }
     else if (syncRx != "null")
     {
-        std::cout << "Create sync sensor receiver" << std::endl;
         std::shared_ptr<Sync::Receiver> receiver = std::make_shared<Sync::Receiver>(syncRx);
         Assignment2::Sensor secondarySensor(size, scaleFactor, hbMq, id,
                                             receiver);

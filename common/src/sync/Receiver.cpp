@@ -88,6 +88,7 @@ namespace Sync
             Sync::Message syncm;
             if(_pMQ->recvMessage(syncm, msgsRemain))
             {
+                //std::cout << "RECEIVED SYNC MESSAGE" << std::endl;
                 _cacheRxValues = syncm.getVals();
                 RxSignal(_cacheRxValues);
             }

@@ -137,6 +137,13 @@ void Sensor::_run() {
 std::chrono::milliseconds Sensor::_init()
 {
     _pHeartbeatSender->start();
+
+    if (_pSyncSender)
+        _pSyncSender->start();
+
+    if (_pSyncReceiver)
+        _pSyncReceiver->start();
+
     _setState(PREFILL);
     return std::chrono::milliseconds(0);
 }
@@ -157,7 +164,6 @@ std::chrono::milliseconds Sensor::_measure()
     sampleVal = sample(20, 20);
     measureVal = measure();
 
-    std::cout << "Sync Counter: " << _syncCounter << std::endl;
     if(_syncCounter++ > 9 && _pSyncSender)
     {
         std::cout << "SYNCING" << std::endl;
