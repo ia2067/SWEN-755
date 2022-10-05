@@ -1,5 +1,5 @@
-#ifndef ASSIGNMENT2_MESSAGES_HPP
-#define ASSIGNMENT2_MESSAGES_HPP
+#ifndef FAULTHANDLE_MESSAGES_HPP
+#define FAULTHANDLE_MESSAGES_HPP
 
 #include <mutex>
 
@@ -7,7 +7,7 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/list.hpp>
 
-namespace Assignment2
+namespace FaultHandle
 {
     enum MessageType_e
     {
@@ -34,6 +34,8 @@ namespace Assignment2
             Message();
             Message(MessageType_e msgType,
                     std::list<int> sensorData);
+            Message(Message&);
+            Message operator=(Message&);
         public:
             MessageType_e getMessageType();
             std::list<int> getSensorData();
@@ -42,8 +44,8 @@ namespace Assignment2
             std::mutex _mutex;
             MessageType_e _msgType;
             std::list<int> _sensorData;
-    }
+    };
 
-} //namespace Assignment2
+} //namespace FaultHandle
 
 #endif //ASSIGNMENT2_MESSAGES_HPP

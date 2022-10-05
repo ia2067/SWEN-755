@@ -112,5 +112,43 @@ target_include_directories(
 )
 #### END LIB SYNC ####
 
+
+#### START LIB FAULTHANDLE ####
+set(faulthandle_lib_name libfaulthandle)
+set(faulthandle_SOURCES
+    src/faulthandle/Client.cpp
+    # src/faulthandle/Receiver.cpp
+    src/faulthandle/Message.cpp
+    )
+
+set(Boost_SyncNeededLibs
+    serialization
+    )
+
+find_package(Boost 1.71.0 COMPONENTS  ${Boost_SyncNeededLibs})
+
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    # Create common library
+    add_library(${faulthandle_lib_name}
+                STATIC 
+                ${faulthandle_SOURCES}
+    )
+    # add boost libs to it
+    target_link_libraries(${faulthandle_lib_name} 
+                          libcore
+                          ${Boost_LIBRARIES} 
+                          rt)
+else()
+    message(SEND_ERROR "BOOST NOT FOUND!")
+endif()
+
+target_include_directories(
+    ${faulthandle_lib_name}
+    PRIVATE
+    ${COMMON_INCLUDE_DIR}
+)
+#### END LIB FAULTHANDLE
+
 #### ADD TESTING ####
 add_subdirectory(test)

@@ -1,6 +1,6 @@
-#include <Message.hpp>
+#include <faulthandle/Message.hpp>
 
-namespace Assignment2
+namespace FaultHandle
 {
 
     Message::Message()
@@ -12,6 +12,16 @@ namespace Assignment2
     : _msgType(msgType),
       _sensorData(sensorData)
     { }
+
+    Message::Message(Message& other)
+    : Message::Message(other.getMessageType(), other.getSensorData())
+    { }
+
+    Message Message::operator=(Message& other)
+    {
+      Message ret(other.getMessageType(), other.getSensorData());
+      return ret;
+    }
 
     MessageType_e Message::getMessageType()
     {
@@ -25,4 +35,4 @@ namespace Assignment2
         return _sensorData;
     }
 
-} // namespace Assignment2
+} // namespace FaultHandle
