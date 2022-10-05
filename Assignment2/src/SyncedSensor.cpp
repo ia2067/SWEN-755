@@ -26,6 +26,10 @@ Sensor::Sensor(int sample_size, float scaling_factor,
     Sensor::messageQueue = messageQueue;
 
     _pHeartbeatSender = std::make_shared<Heartbeat::Sender>(id, messageQueue);
+    _pHandleServerfault = std::make_shared<FaultHandle::Server>(messageQueue);
+
+    _pHandleServerfault->sigWakeUp.connect(boost::bind(&Sensor::handleWakeup, this));
+    _pHandleServerfault->sigGetData.connect(boost::bind(&Sensor::handleGetData, this));
 }
 
 Sensor::Sensor(int sample_size, float scaling_factor, 
@@ -88,6 +92,11 @@ void Sensor::handleRxValues(std::list<int> rxValues)
     _prevSamples = rxValues;
 }
 
+void Sensor::handleWakeup()
+{
+
+}
+
 Sensor::State_e Sensor::_getState()
 {
     return _state;
@@ -122,6 +131,9 @@ void Sensor::_run() {
         case MEASURE:
             nextSleepTime = _measure();
             break;
+        case INACTIVE:
+            nextSleepTime = _inactive();
+            break;
         case FAILURE:
             nextSleepTime = _failure();
             break;
@@ -138,19 +150,26 @@ std::chrono::milliseconds Sensor::_init()
 {
     _pHeartbeatSender->start();
 
+
     if (_pSyncSender)
         _pSyncSender->start();
 
     if (_pSyncReceiver)
         _pSyncReceiver->start();
 
-    _setState(PREFILL);
+    _pFaultHandle->start();
+    
+    // Start Sensor as inactive (wait until told to start).
+    active = false;
+    _setState(INACTIVE);
+    
     return std::chrono::milliseconds(0);
 }
 
 std::chrono::milliseconds Sensor::_prefill()
 {
-    for(int i = 0 ; i < Sensor::sample_size; i++)
+    // Get samples until the sample buffer is filled.
+    for(int i = _prevSamples.size() ; i < Sensor::sample_size; i++)
     {
         sample(20,20);
     }
@@ -187,13 +206,27 @@ std::chrono::milliseconds Sensor::_measure()
     return std::chrono::milliseconds(500);
 }
 
+std::chrono::milliseconds Sensor::_inactive()
+{
+    std::cout << "SENSOR INACTIVE: " << Sensor::id << std::endl;
+    
+    // Sensor should be taken out of inactive as requested.
+    if (active)
+    {
+        // Start Sensor Prefilling (NOTE: Relies on prefill going to measure if enough values)
+        _setState(PREFILL);
+    }
+    return std::chrono::milliseconds(100);
+}
+
 std::chrono::milliseconds Sensor::_failure()
 {
     // std::cout << "Num Runs: " << numRuns << std::endl;
     std::cout << "SENSOR FAILURE: " << Sensor::id << std::endl;
     _pHeartbeatSender->end();
+    _pFaultHandle->end();
     _setState(DEAD);
-    return std::chrono::milliseconds(0);
+    return std::chrono::milliseconds(100);
 }
 
 } // namespace Assignment2

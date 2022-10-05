@@ -8,6 +8,7 @@
 #include <heartbeat/Sender.hpp>
 #include <sync/Sender.hpp>
 #include <sync/Receiver.hpp>
+#include <faulthandle/Sender.hpp>
 
 namespace Assignment2
 {
@@ -27,6 +28,7 @@ public:
         INIT,
         PREFILL,
         MEASURE,
+        INACTIVE,
         FAILURE,
         DEAD
     };
@@ -148,6 +150,13 @@ private:
     std::chrono::milliseconds _measure();
 
     /**
+     * @brief Function for the inactive state
+     * 
+     * @return std::chrono::milliseconds milliseconds to wait before next state
+     */
+    std::chrono::milliseconds _inactive();
+
+    /**
      * @brief Function for the failure state
      * 
      * @return std::chrono::milliseconds milliseconds to wait before next state
@@ -166,7 +175,11 @@ private:
      * 
      */
     std::shared_ptr<Heartbeat::Sender> _pHeartbeatSender;
-
+    
+    /* @brief The child thread which is responsible for receiving commands
+     * 
+     */
+    std::shared_ptr<Heartbeat::Sender> _pHandleServerfault;
     /**
      * @brief (optional) The child thread which is responsible for sending out sync messages
      */
@@ -206,7 +219,14 @@ private:
 
     int numRuns;
 
+
     int _syncCounter;
+    
+    /**
+     * @brief Whether the sensor should try to activate or go inactive on next state machine tick.
+     * NOTE: Intended to syncronize messages incoming on queue to state machine ticks.
+     */
+    bool active;
 };
 
 } // namespace Assignment 2
