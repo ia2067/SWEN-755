@@ -10,6 +10,7 @@ set(Assignment2_Libs
 
 set(sensor_process_exe_name syncedSensorProcess)
 set(sensor_process_SOURCES
+    src/Message.cpp
     src/SyncedSensor.cpp
     src/SyncedSensorProcess.cpp
 )
