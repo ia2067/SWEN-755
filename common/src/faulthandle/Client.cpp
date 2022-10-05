@@ -40,17 +40,28 @@ namespace FaultHandle
     }
     bool Client::_recieve(Message& msg)
     {
-        // try to rx 3 times, if it dont got it, it dont got it...
-        const int NUM_CHECKS = 3;
-        bool idcaboutthis = true;
+        auto oldMsgType = msg.getMessageType();
 
-        int counter = 0;
-        while(_pMQ->recvMessage(msg, idcaboutthis) && counter++ < NUM_CHECKS)
+        if(!_pMQ->timedRecvMessage(msg, std::chrono::milliseconds(1000))
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            return false;
+        }
+
+        MessageType_e expectedMsgType = BAD_MESSAGE_TYPE;
+        switch(oldMsgType)
+        {
+            case CMD_GETDATA:
+                expectedMsgType = RSP_GETDATA;
+                break;
+            case CMD_WAKEUP:
+                expectedMsgType = RSP_WAKEUP;
+                break;
+            default:
+                expectedMsgType = BAD_MESSAGE_TYPE;
+                break;
         }
         
-        return (counter != NUM_CHECKS);    
+        return ((counter != NUM_CHECKS) && (expectedMsgType == msg.getMessageType()));    
     }
 
     
