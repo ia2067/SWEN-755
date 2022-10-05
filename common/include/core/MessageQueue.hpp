@@ -84,9 +84,7 @@ public: // Functional
         std::string serialized_msg(oss.str());
         char msg[serialized_msg.length()];
         serialized_msg.copy(msg, serialized_msg.length());
-        auto currentTimePlus1 = std::chrono::system_clock::now() + std::chrono::seconds(1);
-        auto intermediate = std::chrono::system_clock::to_time_t(currentTimePlus1);
-        auto timeout = boost::posix_time::from_time_t(intermediate);
+        auto timeout = _makeTimeout(std::chrono::milliseconds(1000));
         // std::cout << "buh buh" << std::endl;
         
         if(!_pMQ->timed_send(msg, serialized_msg.length(), 1, timeout))
@@ -119,11 +117,43 @@ public: // Functional
         return true;
     }
 
+    bool timedRecvMessage(T& msg, std::chrono::milliseconds timeout)
+    {
+        std::lock_guard<std::mutex> lock(_mutex);
+        size_t bufSize = 2 * sizeof(T); 
+        char buf[bufSize];
+        size_t rcvdSize;
+        uint pri;
+
+        auto timeout_date = _makeTimeout(timeout);
+        if(_pMQ->timed_receive(buf, bufSize, rcvdSize, pri,timeout_date))
+        {
+            std::istringstream iss(std::string(buf,bufSize));
+            boost::archive::text_iarchive ia(iss);
+
+            ia >> msg;
+        }
+        else
+        {
+            return false;
+        }
+
+        return true;
+    }
+
 public: //gets/
     std::string getMessageQueueName()
     {
         std::lock_guard<std::mutex> lock(_mutex);
         return _mqn;
+    }
+
+private:
+    boost::posix_time::ptime _makeTimeout(std::chrono::milliseconds timeout)
+    {
+        auto currentTimePlus1 = std::chrono::system_clock::now() + timeout;
+        auto intermediate = std::chrono::system_clock::to_time_t(currentTimePlus1);
+        return boost::posix_time::from_time_t(intermediate);
     }
 
 private:

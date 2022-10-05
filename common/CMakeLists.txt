@@ -117,7 +117,7 @@ target_include_directories(
 set(faulthandle_lib_name libfaulthandle)
 set(faulthandle_SOURCES
     src/faulthandle/Client.cpp
-    # src/faulthandle/Receiver.cpp
+    src/faulthandle/Server.cpp
     src/faulthandle/Message.cpp
     )
 
