@@ -44,6 +44,10 @@ int main(int argc, char const *argv[])
         std::shared_ptr<Sync::Sender> sender = std::make_shared<Sync::Sender>(syncTx);
         Assignment2::Sensor primarySensor(size, scaleFactor, hbMq, id, 
                                           sender);
+        primarySensor.start();
+        while(true) {}
+
+        primarySensor.end();
     }
     else if (syncRx != "null")
     {
@@ -51,6 +55,10 @@ int main(int argc, char const *argv[])
         std::shared_ptr<Sync::Receiver> receiver = std::make_shared<Sync::Receiver>(syncRx);
         Assignment2::Sensor secondarySensor(size, scaleFactor, hbMq, id,
                                             receiver);
+        secondarySensor.start();
+        while(true) {}
+
+        secondarySensor.end();
     }
     else
     {
@@ -61,7 +69,7 @@ int main(int argc, char const *argv[])
     // Assignment2::Sensor sensor(size, scaleFactor, mq, id);
     // sensor.start();
 
-    while(true) {}
+    //while(true) {}
 
     // sensor.end();
     return 0;

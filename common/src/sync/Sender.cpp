@@ -108,6 +108,7 @@ namespace Sync
     {
         if(_syncSegment >= NUM_SYNC_SEGMENTS)
         {
+            std::cout << "SEND SYNC MESSAGE" << std::endl;
             _syncSegment = 0;
             _setState(SENDING);
             return std::chrono::milliseconds(0);
