@@ -90,7 +90,10 @@ namespace Sync
             {
                 //std::cout << "RECEIVED SYNC MESSAGE" << std::endl;
                 _cacheRxValues = syncm.getVals();
-                RxSignal(_cacheRxValues);
+                if (_cacheRxValues.size() > 0)
+                {
+                    RxSignal(_cacheRxValues);
+                }
             }
         }
 
