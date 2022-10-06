@@ -126,7 +126,7 @@ int main(int argc, char const *argv[])
             std::cout << std::endl;
         }
         else
-            std::cout << "DIDN'T GET DATA (SECODNARY)" << std::endl;
+            std::cout << "DIDN'T GET DATA (SECONDARY)" << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     

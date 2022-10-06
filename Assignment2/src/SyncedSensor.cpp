@@ -209,6 +209,7 @@ std::chrono::milliseconds Sensor::_measure()
     // if(_syncCounter++ > 9 && _pSyncSender)
     // {
     //     std::cout << "SYNCING" << std::endl;
+    if(_pSyncSender)
         _pSyncSender->cacheValues(_prevSamples);
     //     _syncCounter = 0;
     // }
