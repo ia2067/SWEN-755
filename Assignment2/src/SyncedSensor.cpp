@@ -112,6 +112,7 @@ Sensor::State_e Sensor::_getState()
 
 void Sensor::_setState(State_e state)
 {
+    // std::cout << __FUNCTION__ << "(" << id << "): " << state << std::endl;
     _state = state;
 }
 bool Sensor::_getActive()
@@ -121,6 +122,7 @@ bool Sensor::_getActive()
 }
 void Sensor::_setActive(bool a)
 {
+    // std::cout << __FUNCTION__ << ": " << (a ? "TRUE" : "FALSE") << std::endl;
     std::lock_guard<std::mutex> lock(_mutex);
     active = a;
 }
@@ -180,7 +182,7 @@ std::chrono::milliseconds Sensor::_init()
     // Start Sensor as inactive (wait until told to start).
     _setActive(false);
     _setState(PREFILL);
-    
+
     return std::chrono::milliseconds(0);
 }
 
@@ -192,7 +194,8 @@ std::chrono::milliseconds Sensor::_prefill()
         sample(20,20);
     }
 
-    _pSyncSender->cacheValues(_prevSamples);
+    if(_pSyncSender)
+        _pSyncSender->cacheValues(_prevSamples);
     
     _setState(INACTIVE);
     return std::chrono::milliseconds(0);
