@@ -96,7 +96,8 @@ void Sensor::handleRxValues(std::list<int> rxValues)
 
 void Sensor::handleWakeup()
 {
-    active = true;
+    // std::cout << "SENSOR WAKING UP!" << std::endl;
+    _setActive(true);
 }
 
 std::list<int> Sensor::handleGetData()
@@ -112,6 +113,16 @@ Sensor::State_e Sensor::_getState()
 void Sensor::_setState(State_e state)
 {
     _state = state;
+}
+bool Sensor::_getActive()
+{
+    std::lock_guard<std::mutex> lock(_mutex);
+    return active;
+}
+void Sensor::_setActive(bool a)
+{
+    std::lock_guard<std::mutex> lock(_mutex);
+    active = a;
 }
 void Sensor::_cacheSample(int newSample)
 {
@@ -167,8 +178,8 @@ std::chrono::milliseconds Sensor::_init()
     _pHandleServerfault->start();
     
     // Start Sensor as inactive (wait until told to start).
-    active = false;
-    _setState(INACTIVE);
+    _setActive(false);
+    _setState(PREFILL);
     
     return std::chrono::milliseconds(0);
 }
@@ -180,8 +191,10 @@ std::chrono::milliseconds Sensor::_prefill()
     {
         sample(20,20);
     }
+
+    _pSyncSender->cacheValues(_prevSamples);
     
-    _setState(MEASURE);
+    _setState(INACTIVE);
     return std::chrono::milliseconds(0);
 }
 
@@ -190,12 +203,12 @@ std::chrono::milliseconds Sensor::_measure()
     sampleVal = sample(20, 20);
     measureVal = measure();
 
-    if(_syncCounter++ > 9 && _pSyncSender)
-    {
-        std::cout << "SYNCING" << std::endl;
+    // if(_syncCounter++ > 9 && _pSyncSender)
+    // {
+    //     std::cout << "SYNCING" << std::endl;
         _pSyncSender->cacheValues(_prevSamples);
-        _syncCounter = 0;
-    }
+    //     _syncCounter = 0;
+    // }
 
     // std::cout << "Sample Value: " << sampleVal << " Measure Value: " << measureVal << std::endl;
     // numRuns++;
@@ -218,10 +231,10 @@ std::chrono::milliseconds Sensor::_inactive()
     // std::cout << "SENSOR INACTIVE: " << Sensor::id << std::endl;
     
     // Sensor should be taken out of inactive as requested.
-    if (active)
+    if (_getActive())
     {
         // Start Sensor Prefilling (NOTE: Relies on prefill going to measure if enough values)
-        _setState(PREFILL);
+        _setState(MEASURE);
     }
     return std::chrono::milliseconds(100);
 }

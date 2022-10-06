@@ -60,6 +60,7 @@ Sender::State_e Sender::getState()
 }
 bool Sender::_sendBeat()
 {
+    // std::cout << "buh buh (" << _id << ")" << std::endl;
     Heartbeat::Message hbm(_id,
                            std::chrono::system_clock::now());
     

@@ -19,7 +19,7 @@ namespace FaultHandle
         std::lock_guard<std::mutex> lock(_mutex);
         if(!_pMQ->connect())
         {   
-            std::cout << "CLIENT COULDNT CONNECT TO MQ" << std::endl;
+            // std::cout << "CLIENT COULDNT CONNECT TO MQ" << std::endl;
             msg = BAD_MSG;
             return false;
         }
@@ -32,13 +32,16 @@ namespace FaultHandle
 
         if(!_send(msg))
         {
-            std::cout << "CLIENT COULDNT SEND MESSAGE" << std::endl;
+            // std::cout << "CLIENT COULDNT SEND MESSAGE" << std::endl;
             msg = BAD_MSG;
             return false;
         }
-        else if(!_recieve(msg))
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        if(!_recieve(msg))
         {
-            std::cout << "CLIENT COULDNT RECV MESSAGE" << std::endl;
+            // std::cout << "CLIENT COULDNT RECV MESSAGE" << std::endl;
             msg = BAD_MSG;
             return false;
         }
@@ -71,8 +74,8 @@ namespace FaultHandle
                 expectedMsgType = BAD_MESSAGE_TYPE;
                 break;
         }
-        std::cout << "  expected message was : " << expectedMsgType << std::endl; 
-        std::cout << "Rx-ed message was type : "<< msg.getMessageType() << std::endl;
+        // std::cout << "  expected message was : " << expectedMsgType << std::endl; 
+        // std::cout << "Rx-ed message was type : "<< msg.getMessageType() << std::endl;
         return (expectedMsgType == msg.getMessageType());    
     }
 

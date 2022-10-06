@@ -26,7 +26,7 @@ namespace Sync
             };
 
         public:
-            Sender(std::string);
+            Sender(std::string, std::chrono::milliseconds);
             ~Sender();
 
         public: 

@@ -151,8 +151,10 @@ public: //gets/
 private:
     boost::posix_time::ptime _makeTimeout(std::chrono::milliseconds timeout)
     {
-        auto currentTimePlus1 = std::chrono::system_clock::now() + timeout;
-        auto intermediate = std::chrono::system_clock::to_time_t(currentTimePlus1);
+        using clock = std::chrono::system_clock;
+        clock::time_point nowp = clock::now();
+        clock::time_point end = nowp + timeout;
+        auto intermediate = std::chrono::system_clock::to_time_t(end);
         return boost::posix_time::from_time_t(intermediate);
     }
 

@@ -131,6 +131,7 @@ std::chrono::milliseconds Receiver::_listen()
         if(_pMQ->recvMessage(hbm, msgsRemain))
         {
             std::string id = hbm.getId();
+            // std::cout << "recording beat for " << id << std::endl;
             std::chrono::system_clock::time_point tp = hbm.getBeatTime();
             _lastBeats[id] = tp;
         }

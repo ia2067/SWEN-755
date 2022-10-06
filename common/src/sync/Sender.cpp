@@ -8,8 +8,9 @@ namespace bip = boost::interprocess;
 
 namespace Sync
 {
-    Sender::Sender(std::string messageQueueName)
+    Sender::Sender(std::string messageQueueName, std::chrono::milliseconds sendingInterval)
     : _state(INIT),
+      _sendingInterval(sendingInterval),
       _pMQ(std::make_shared<Core::MessageQueue<Message>>(messageQueueName, false))
     { }
 

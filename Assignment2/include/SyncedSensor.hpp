@@ -125,6 +125,10 @@ private:
      */
     void _setState(State_e);
 
+
+    bool _getActive();
+    void _setActive(bool);
+
 private:
     /**
      * @brief cache an individual sample, adds it to the trailing list of 10 samples

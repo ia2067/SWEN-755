@@ -15,11 +15,10 @@ namespace Sync
     {
         private: //serialization
             friend class boost::serialization::access;
-            std::list<int> msgVals;
             template<class Archive>
             void serialize(Archive & ar, const unsigned int version)
             {
-                ar & msgVals;
+                ar & _msgVals;
             }
         public:
             Message();

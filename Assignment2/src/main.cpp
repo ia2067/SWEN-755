@@ -27,73 +27,93 @@ int main(int argc, char const *argv[])
 
     namespace bp = boost::process;
     bp::child primarySensorProcess("./syncedSensorProcess --size 10 --scaleFactor 2.0 --hbMq myQueue --fhMq primarySensorQ --id primarySensor --syncTx syncQueue --syncRx null");
-    sleep(1);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     bp::child secondarySensorProcess("./syncedSensorProcess --size 10 --scaleFactor 2.0 --hbMq myQueue --fhMq secondarySensorQ --id secondarySensor --syncTx null --syncRx syncQueue");
 
-    Heartbeat::Receiver hr(mqn, std::chrono::milliseconds(50), std::chrono::milliseconds(3000));
+    Heartbeat::Receiver hr(mqn, std::chrono::milliseconds(100), std::chrono::milliseconds(3000));
     FaultHandle::Client primarySensorChecker(primarySensorQueueName);
     FaultHandle::Client secondarySensorChecker(secondarySensorQueueName);
 
 
     hr.start();
-    hr.addSenderId("primarySensor");
-    hr.addSenderId("secondarySensor");
+    // hr.addSenderId("primarySensor");
+    // hr.addSenderId("secondarySensor");
 
     bool primaryDied = false;
+    bool secondaryDied = false;
     auto fHandlePrimaryDied = [&] (std::string id){
         if (id == "primarySensor")
         {
+            if(!primaryDied)
+                std::cout << "PRIMARY IS DEAD!" << std::endl;
             primaryDied = true;
-            std::cout << "PRIMARY IS DEAD!" << std::endl;
+            
+        }
+        if(id == "secondarySensor")
+        {
+            if(!secondaryDied)
+                std::cout << "SECONDARY IS DEAD!" << std::endl;
+            secondaryDied = true;
         }
 
     };
 
-    sleep(1);
-
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    bool primaryAwake = false;
+    while(!primaryAwake)
     {
         FaultHandle::Message wakeup_primary(FaultHandle::MessageType_e::CMD_WAKEUP,{});
         if(primarySensorChecker.query(wakeup_primary))
+        {
             std::cout << "PRIMARY IS AWAKE!" << std::endl;
+            primaryAwake = true;
+        }
+            
         else
             std::cout << "PRIMARY DIDNT WAKE UP AWAKE!" << std::endl;
+        
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
     
-    sleep(1);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    hr.sigNewDead.connect(fHandlePrimaryDied);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 
+    while(!primaryDied)
     {
         FaultHandle::Message get_data_cmd(FaultHandle::MessageType_e::CMD_GETDATA,{});
         if(primarySensorChecker.query(get_data_cmd))
         {
-            std::cout << "Got Data: ";
+            std::cout << "Got Data(primary): ";
             for(auto it : get_data_cmd.getSensorData())
             {
-                std::cout << it << ", ";
+                std::cout << it << ", " << std::flush;
             }
             std::cout << std::endl;
         }
         else
             std::cout << "DIDN'T GET DATA (PRIMARY)" << std::endl;
-            
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));   
     }
 
-    while(!primaryDied)
-    {
-        //waiting for primary to be ded...
-        // probably should do this differently but meh
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    }
 
+    bool secondaryAwake = false;
+    while(!secondaryAwake)
     {
         FaultHandle::Message wake_up_secondary(FaultHandle::MessageType_e::CMD_WAKEUP,{});
         if(secondarySensorChecker.query(wake_up_secondary))
+        {
             std::cout << "SECONDARY IS AWAKE!" << std::endl;
+            secondaryAwake = true;
+        }
         else
             std::cout << "SECONDARY DIDNT WAKE UP AWAKE!" << std::endl;
     }
     
-    sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 
+    while(!secondaryDied)
     {
         FaultHandle::Message get_data_cmd(FaultHandle::MessageType_e::CMD_GETDATA,{});
         if(secondarySensorChecker.query(get_data_cmd))
@@ -101,13 +121,13 @@ int main(int argc, char const *argv[])
             std::cout << "Got Data(secondary): ";
             for(auto it : get_data_cmd.getSensorData())
             {
-                std::cout << it << ", ";
+                std::cout << it << ", " << std::flush;
             }
             std::cout << std::endl;
         }
         else
             std::cout << "DIDN'T GET DATA (SECODNARY)" << std::endl;
-            
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     
 

@@ -38,7 +38,7 @@ int main(int argc, char const *argv[])
 
     if(syncTx != "null")
     {
-        std::shared_ptr<Sync::Sender> sender = std::make_shared<Sync::Sender>(syncTx);
+        std::shared_ptr<Sync::Sender> sender = std::make_shared<Sync::Sender>(syncTx, std::chrono::milliseconds(2000));
         Assignment2::Sensor primarySensor(size, scaleFactor, hbMq, fhMq, id, 
                                           sender);
         

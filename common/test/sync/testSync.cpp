@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_CASE(sender)
     
     BOOST_WARN(boost::interprocess::message_queue::remove(mqn.c_str()));
 
-    auto pSyncSend = std::make_shared<Sync::Sender>(mqn);
+    auto pSyncSend = std::make_shared<Sync::Sender>(mqn, std::chrono::milliseconds(2000));
     BOOST_CHECK_MESSAGE(pSyncSend->start(), "Failure to start sync sender(1)");
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));

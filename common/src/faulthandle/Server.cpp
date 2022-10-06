@@ -18,6 +18,7 @@ namespace FaultHandle
     }
     void Server::_setState(State_e state)
     {
+        // std::cout << "Server: " << __FUNCTION__ << ": " << state << std::endl;
         std::lock_guard<std::mutex> lock(_mutex);
         _state = state;
     }
@@ -47,27 +48,25 @@ namespace FaultHandle
     }
     std::chrono::milliseconds Server::_init()
     {
-        std::cout << "SERVER INIT" << std::endl;
         _setState(CREATING_MQ);
 
         return std::chrono::milliseconds(0);
     }
     std::chrono::milliseconds Server::_createMQ()
     {
-        std::cout << "SERVER GOT CREATE MQ" << std::endl;
         if(!_pMQ->connect())
             return std::chrono::milliseconds(250);
-            
             
         _setState(LISTENING);
         return std::chrono::milliseconds(100);
     }
     std::chrono::milliseconds Server::_listen()
     {
+        // std::cout << "ENTER LISTEN" << std::endl;
         Message msg;
-        if(_pMQ->timedRecvMessage(msg, std::chrono::milliseconds(250)))
+        if(_pMQ->timedRecvMessage(msg, std::chrono::milliseconds(1000)))
         {
-            std::cout << "SERVER GOT A MESSAGE" << std::endl;
+            // std::cout << "SERVER GOT A MESSAGE" << std::endl;
             switch(msg.getMessageType())
             {
                 case CMD_GETDATA:
@@ -81,12 +80,12 @@ namespace FaultHandle
                     break;
             }
         }
-        return std::chrono::milliseconds(100);
+        return std::chrono::milliseconds(250);
     }
 
     void Server::_handleGetData()
     {
-        std::cout << "SERVER GOT DATA REQ" << std::endl;
+        // std::cout << "SERVER GOT DATA REQ" << std::endl;
         std::list<int> data = sigGetData().get();
         Message rsp(RSP_GETDATA,
                     data);
@@ -96,7 +95,7 @@ namespace FaultHandle
     }
     void Server::_handleWakeUp()
     {
-        std::cout << "SERVER GOT WAKEUP" << std::endl;
+        // std::cout << "SERVER GOT WAKEUP" << std::endl;
         sigWakeUp();
         Message rsp(RSP_WAKEUP,
                     {});
