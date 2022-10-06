@@ -131,9 +131,13 @@ std::chrono::milliseconds Receiver::_listen()
         if(_pMQ->recvMessage(hbm, msgsRemain))
         {
             std::string id = hbm.getId();
-            // std::cout << "recording beat for " << id << std::endl;
             std::chrono::system_clock::time_point tp = hbm.getBeatTime();
-            _lastBeats[id] = tp;
+
+            if(id.length() != 0)
+            {
+                // std::cout << "recording beat for " << id << std::endl;
+                _lastBeats[id] = tp;
+            }
         }
     }
 
@@ -155,13 +159,14 @@ std::chrono::milliseconds Receiver::_checkPulses()
         isDead = (diff_ms > expiredInterval_ms);
 
 
-        if(isDead)
+        if(isDead && _deadIds.count(id) == 0)
         {
 
-            _deadIds.insert(id);
+            _deadIds.emplace(id);
+            // std::cout << "signaling dead: " << id << std::endl;
             sigNewDead(id); //signals up that someone died!
         }
-        else
+        else if (_deadIds.count(id) > 0)
         {
             // std::cout << "erasing dead: " << id << std::endl;
             _deadIds.erase(id);
