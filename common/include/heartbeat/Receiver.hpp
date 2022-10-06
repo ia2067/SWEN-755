@@ -76,6 +76,7 @@ namespace Heartbeat
         std::chrono::milliseconds _checkInterval;
         std::chrono::milliseconds _expiredInterval;
         std::map<std::string, std::chrono::system_clock::time_point> _lastBeats;
+        std::set<std::string> _potentiallyDeadIds;
         std::set<std::string> _deadIds;
         std::shared_ptr<Core::MessageQueue<Message>> _pMQ;
     };

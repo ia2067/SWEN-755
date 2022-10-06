@@ -152,23 +152,28 @@ std::chrono::milliseconds Receiver::_checkPulses()
         bool isDead = false;
         std::string id = beatPair.first;
 
-        std::chrono::system_clock::duration diff = std::chrono::system_clock::now() - beatPair.second;
-        double diff_ms = diff.count() / 1e6;
-        double expiredInterval_ms = getExpiredInterval().count();
+        using clock = std::chrono::system_clock;
+        clock::time_point nowp = clock::now();
+        clock::time_point lastAliveBeat = nowp - getExpiredInterval(); 
 
-        isDead = (diff_ms > expiredInterval_ms);
+        isDead = (lastAliveBeat > beatPair.second);
 
-
-        if(isDead && _deadIds.count(id) == 0)
+        if(isDead && _potentiallyDeadIds.count(id) == 0)
         {
-
+            // std::cout << id << "is potentially dead..." << std::endl;
+            _potentiallyDeadIds.emplace(id);
+        }
+        else if (isDead && _potentiallyDeadIds.count(id) > 0 && _deadIds.count(id) == 0)
+        {
+            // std::cout << id << "is dead..." << std::endl;
             _deadIds.emplace(id);
             // std::cout << "signaling dead: " << id << std::endl;
             sigNewDead(id); //signals up that someone died!
         }
-        else if (_deadIds.count(id) > 0)
+        else if (!isDead && _deadIds.count(id) > 0)
         {
             // std::cout << "erasing dead: " << id << std::endl;
+            _potentiallyDeadIds.erase(id);
             _deadIds.erase(id);
         }
     }
