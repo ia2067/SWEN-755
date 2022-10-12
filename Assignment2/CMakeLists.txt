@@ -42,6 +42,7 @@ target_include_directories(
 
 set(main_exe_name ${PROJECT_NAME})
 set(main_SOURCES
+    src/FaultMonitor.cpp
     src/main.cpp
 )
 
