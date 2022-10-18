@@ -171,6 +171,13 @@ private:
      * @return std::chrono::milliseconds milliseconds to wait before next state
      */
     std::chrono::milliseconds _failure();
+
+    /**
+     * @brief Fucntion for the dead state
+     *
+     * @return std::chrono::milliseconds milliseoncds to wait before next state
+     */
+    std::chrono::milliseconds _dead();
     
 private:
     /**
