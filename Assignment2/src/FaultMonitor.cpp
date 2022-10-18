@@ -73,6 +73,7 @@ std::chrono::milliseconds FaultMonitor::_wakingPrimary()
     if(_pPrimary->query(wakeup_primary))
     {
         std::cout << "PRIMARY IS AWAKE!" << std::endl;
+        _cachePrimaryDead(false);
         _setState(RUNNING_PRIMARY);
     }
     else
@@ -108,6 +109,7 @@ std::chrono::milliseconds FaultMonitor::_wakingSecondary()
     if(_pSecondary->query(wake_up_secondary))
     {
         std::cout << "SECONDARY IS AWAKE!" << std::endl;
+        _cacheSecondaryDead(false);
         _setState(RUNNING_SECONDARY);
     }
     else
