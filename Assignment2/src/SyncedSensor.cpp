@@ -252,7 +252,7 @@ std::chrono::milliseconds Sensor::_failure()
     // std::cout << "Num Runs: " << numRuns << std::endl;
     std::cout << "SENSOR FAILURE: " << Sensor::id << std::endl;
     _pHeartbeatSender->end();
-    _pHandleServerfault->end();
+    _setActive(false);
     _setState(DEAD);
     return std::chrono::milliseconds(100);
 }
