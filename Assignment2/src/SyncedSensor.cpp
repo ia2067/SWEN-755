@@ -164,20 +164,21 @@ void Sensor::_run() {
     } while (!_getShutdown());
 
     _setState(DEAD);
+    _pHandleServerfault->end();
 }
 
 std::chrono::milliseconds Sensor::_init()
 {
     _pHeartbeatSender->start();
 
-
-    if (_pSyncSender)
+    if (_pSyncSender && !_pSyncSender->started())
         _pSyncSender->start();
 
-    if (_pSyncReceiver)
+    if (_pSyncReceiver && !_pSyncReceiver->started())
         _pSyncReceiver->start();
 
-    _pHandleServerfault->start();
+    if (!_pHandleServerfault->started())
+        _pHandleServerfault->start();
     
     // Start Sensor as inactive (wait until told to start).
     _setActive(false);
