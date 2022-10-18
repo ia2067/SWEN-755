@@ -26,6 +26,9 @@ public:
         SHUTDOWN
     };
 
+public: // Number of cycles primary needs to show alive before swtich back.
+    const int PRI_NUM_CYCLES_ALIVE = 3;
+
 public:
     FaultMonitor(std::string, std::string, std::string);
     virtual ~FaultMonitor() = default;
@@ -43,6 +46,9 @@ private: //State functions
 
 private: //signal handlers
     void _handleNewDead(std::string);
+
+private: // Alive count incrementer(s)
+    int _primaryAliveCnt;
 
 private: // cached members
     std::mutex _mutex;
