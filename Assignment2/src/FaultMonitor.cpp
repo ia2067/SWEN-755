@@ -144,7 +144,7 @@ std::chrono::milliseconds FaultMonitor::_runningSecondary()
 
     if(_getSecondaryDead())
     {
-        _setState(ALL_DEAD);
+        _setState(WAKING_PRIMARY);
         return std::chrono::milliseconds(100);
     }
 
