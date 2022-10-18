@@ -157,6 +157,9 @@ void Sensor::_run() {
         case FAILURE:
             nextSleepTime = _failure();
             break;
+        case DEAD:
+            nextSleepTime = _dead();
+            break;
         default:
             break;
         }
@@ -251,6 +254,17 @@ std::chrono::milliseconds Sensor::_failure()
     _pHeartbeatSender->end();
     _pHandleServerfault->end();
     _setState(DEAD);
+    return std::chrono::milliseconds(100);
+}
+
+std::chrono::milliseconds Sensor::_dead()
+{
+    if (_getActive())
+    {
+        std::cout << "Activate dead sensor " << Sensor::id << std::endl;
+        _setState(INIT);
+    }
+
     return std::chrono::milliseconds(100);
 }
 
