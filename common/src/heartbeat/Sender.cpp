@@ -58,6 +58,14 @@ Sender::State_e Sender::getState()
     std::lock_guard<std::mutex> lock(_mutex);
     return _state;
 }
+void Sender::pauseBeat()
+{
+    _setState(SHUTTING_DOWN);
+}
+void Sender::resumeBeat()
+{
+    _setState(BEATING);
+}
 bool Sender::_sendBeat()
 {
     // std::cout << "buh buh (" << _id << ")" << std::endl;
