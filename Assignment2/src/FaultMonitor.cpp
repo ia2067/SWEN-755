@@ -128,7 +128,7 @@ std::chrono::milliseconds FaultMonitor::_runningSecondary()
         FaultHandle::Message wakeup_primary(FaultHandle::MessageType_e::CMD_WAKEUP,{});
         if(_pPrimary->query(wakeup_primary))
         {
-            std::cout << "PRIMARY IS AWAKE!" << std::endl;
+            std::cout << "PRIMARY IS AWAKE AGAIN!" << std::endl;
             _cachePrimaryDead(false);
         }
         else 
