@@ -98,8 +98,6 @@ std::chrono::milliseconds FaultMonitor::_runningPrimary()
         }
         std::cout << std::endl;
     }
-    else
-        std::cout << "DIDN'T GET DATA (PRIMARY)" << std::endl;
 
     return std::chrono::milliseconds(1000);
 }
@@ -158,8 +156,6 @@ std::chrono::milliseconds FaultMonitor::_runningSecondary()
         }
         std::cout << std::endl;
     }
-    else
-        std::cout << "DIDN'T GET DATA (SECONDARY)" << std::endl;
 
     // If primary sensor has been awake long enough, then time to switch back to it.
     if (_primaryAliveCnt > FaultMonitor::PRI_NUM_CYCLES_ALIVE)
