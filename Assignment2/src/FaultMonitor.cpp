@@ -73,6 +73,7 @@ std::chrono::milliseconds FaultMonitor::_wakingPrimary()
     if(_pPrimary->query(wakeup_primary))
     {
         std::cout << "PRIMARY IS AWAKE!" << std::endl;
+        _cachePrimaryDead(false);
         _setState(RUNNING_PRIMARY);
     }
     else
@@ -97,8 +98,6 @@ std::chrono::milliseconds FaultMonitor::_runningPrimary()
         }
         std::cout << std::endl;
     }
-    else
-        std::cout << "DIDN'T GET DATA (PRIMARY)" << std::endl;
 
     return std::chrono::milliseconds(1000);
 }
@@ -108,6 +107,7 @@ std::chrono::milliseconds FaultMonitor::_wakingSecondary()
     if(_pSecondary->query(wake_up_secondary))
     {
         std::cout << "SECONDARY IS AWAKE!" << std::endl;
+        _cacheSecondaryDead(false);
         _setState(RUNNING_SECONDARY);
     }
     else
@@ -117,9 +117,32 @@ std::chrono::milliseconds FaultMonitor::_wakingSecondary()
 }
 std::chrono::milliseconds FaultMonitor::_runningSecondary() 
 {
+    // Attempt to wake up the primary (if not) so it can be targeted again. 
+    if(_getPrimaryDead())
+    {
+        // Reset alive count to track how long it's been alive.
+        _primaryAliveCnt = 0;
+
+        FaultHandle::Message wakeup_primary(FaultHandle::MessageType_e::CMD_WAKEUP,{});
+        if(_pPrimary->query(wakeup_primary))
+        {
+            std::cout << "PRIMARY IS AWAKE AGAIN!" << std::endl;
+            _cachePrimaryDead(false);
+        }
+        else 
+        {
+            std::cout << "PRIMARY DIDN'T WAKE UP!" << std::endl;
+        }
+    }
+    else
+    {
+        // Update primary alive counter to determine when to switch over.
+        _primaryAliveCnt++;
+    }
+
     if(_getSecondaryDead())
     {
-        _setState(ALL_DEAD);
+        _setState(WAKING_PRIMARY);
         return std::chrono::milliseconds(100);
     }
 
@@ -133,8 +156,13 @@ std::chrono::milliseconds FaultMonitor::_runningSecondary()
         }
         std::cout << std::endl;
     }
-    else
-        std::cout << "DIDN'T GET DATA (SECONDARY)" << std::endl;
+
+    // If primary sensor has been awake long enough, then time to switch back to it.
+    if (_primaryAliveCnt > FaultMonitor::PRI_NUM_CYCLES_ALIVE)
+    {
+        std::cout << "Switching back to primary." << std::endl;
+        _setState(WAKING_PRIMARY);
+    }
 
     return std::chrono::milliseconds(1000);
 }

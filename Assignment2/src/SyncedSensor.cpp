@@ -157,6 +157,9 @@ void Sensor::_run() {
         case FAILURE:
             nextSleepTime = _failure();
             break;
+        case DEAD:
+            nextSleepTime = _dead();
+            break;
         default:
             break;
         }
@@ -164,20 +167,22 @@ void Sensor::_run() {
     } while (!_getShutdown());
 
     _setState(DEAD);
+    _pHandleServerfault->end();
 }
 
 std::chrono::milliseconds Sensor::_init()
 {
-    _pHeartbeatSender->start();
+    if (!_pHeartbeatSender->started())
+        _pHeartbeatSender->start();
 
-
-    if (_pSyncSender)
+    if (_pSyncSender && !_pSyncSender->started())
         _pSyncSender->start();
 
-    if (_pSyncReceiver)
+    if (_pSyncReceiver && !_pSyncReceiver->started())
         _pSyncReceiver->start();
 
-    _pHandleServerfault->start();
+    if (!_pHandleServerfault->started())
+        _pHandleServerfault->start();
     
     // Start Sensor as inactive (wait until told to start).
     _setActive(false);
@@ -247,9 +252,21 @@ std::chrono::milliseconds Sensor::_failure()
 {
     // std::cout << "Num Runs: " << numRuns << std::endl;
     std::cout << "SENSOR FAILURE: " << Sensor::id << std::endl;
-    _pHeartbeatSender->end();
-    _pHandleServerfault->end();
+    _pHeartbeatSender->pauseBeat();
+    _setActive(false);
     _setState(DEAD);
+    return std::chrono::milliseconds(100);
+}
+
+std::chrono::milliseconds Sensor::_dead()
+{
+    if (_getActive())
+    {
+        std::cout << "Activate dead sensor " << Sensor::id << std::endl;
+        _pHeartbeatSender->resumeBeat();
+        _setState(INIT);
+    }
+
     return std::chrono::milliseconds(100);
 }
 
