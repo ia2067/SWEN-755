@@ -172,7 +172,8 @@ void Sensor::_run() {
 
 std::chrono::milliseconds Sensor::_init()
 {
-    _pHeartbeatSender->start();
+    if (!_pHeartbeatSender->started())
+        _pHeartbeatSender->start();
 
     if (_pSyncSender && !_pSyncSender->started())
         _pSyncSender->start();
