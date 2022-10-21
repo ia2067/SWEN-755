@@ -2,6 +2,8 @@
 
 #include <ThreadPool.hpp>
 
+#include <FibonacciCommand.hpp>
+
 int main(int argc, char const *argv[])
 {
     std::cout << "Assignment 3" << std::endl;
@@ -24,6 +26,9 @@ int main(int argc, char const *argv[])
         std::cout << "Current State: " << tp.getState() << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
+
+    std::shared_ptr<Assignment3::FibonacciCommand> pFibCmd = std::make_shared<Assignment3::FibonacciCommand>(30);
+    tp.addCommand(pFibCmd, Assignment3::ThreadPool::HIGH);
 
     tp.end();
     return 0;

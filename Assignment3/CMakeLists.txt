@@ -9,6 +9,7 @@ set(main_exe_name ${PROJECT_NAME})
 set(main_SOURCES
     src/ThreadPool.cpp
     src/WorkerThread.cpp
+    src/FibonacciCommand.cpp
     src/main.cpp
 )
 
