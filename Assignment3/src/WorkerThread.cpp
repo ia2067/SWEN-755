@@ -51,12 +51,12 @@ std::chrono::milliseconds WorkerThread::_state_init()
 
 std::chrono::milliseconds WorkerThread::_state_execute()
 {
-    _cmd.execute();
+    _cmd->execute();
     _setState(DONE);
     return std::chrono::milliseconds(100);
 }
 
-void WorkerThread::addCommand(Command cmd)
+void WorkerThread::addCommand(std::shared_ptr<Command> cmd)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     
@@ -74,7 +74,7 @@ int WorkerThread::getResult()
     if (getState() == DONE)
     {
         _setState(READY);
-        return _cmd.getResult();
+        return _cmd->getResult();
     }
     //TODO: Exception?
     return -1;

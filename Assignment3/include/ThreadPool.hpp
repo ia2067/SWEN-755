@@ -41,13 +41,13 @@ private: // members
     std::mutex _mutex;
 
 public: //Command Operations
-    void addCommand(Command cmd, Priority_e pri);
+    void addCommand(std::shared_ptr<Command> cmd, Priority_e pri);
     
 private:
     int _numThreads;
-    std::queue<Command> _lowPriorityQueue;
-    std::queue<Command> _highPriorityQueue;
-    std::vector<WorkerThread> _threads;
+    std::queue<std::shared_ptr<Command>> _lowPriorityQueue;
+    std::queue<std::shared_ptr<Command>> _highPriorityQueue;
+    std::vector<std::shared_ptr<WorkerThread>> _threads;
 
 public: // public state management
     State_e getState();

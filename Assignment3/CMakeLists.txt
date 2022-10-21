@@ -7,6 +7,8 @@ set(Assignment3_Libs
 
 set(main_exe_name ${PROJECT_NAME})
 set(main_SOURCES
+    src/ThreadPool.cpp
+    src/WorkerThread.cpp
     src/main.cpp
 )
 

@@ -37,7 +37,7 @@ std::chrono::milliseconds ThreadPool::_state_init()
     _threads.clear();
     for (int i=0; i<_numThreads; i++)
     {
-        _threads.push_back(WorkerThread());
+        _threads.push_back(std::make_shared<WorkerThread>());
     }
 
     _setState(READY);
@@ -50,7 +50,7 @@ std::chrono::milliseconds ThreadPool::_state_ready()
     return std::chrono::milliseconds(100);
 }
 
-void ThreadPool::addCommand(Command cmd, Priority_e pri)
+void ThreadPool::addCommand(std::shared_ptr<Command> cmd, Priority_e pri)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     switch (pri)

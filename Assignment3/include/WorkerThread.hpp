@@ -42,10 +42,10 @@ public:
     int getId();
 
 public: //Command Operations
-    void addCommand(Command cmd);
+    void addCommand(std::shared_ptr<Command> cmd);
     int getResult();
 private:
-    Command _cmd;
+    std::shared_ptr<Command> _cmd;
 
 public: // public state management
     State_e getState();

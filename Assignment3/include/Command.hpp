@@ -19,7 +19,7 @@ private: // Interface
      * 
      * @result Result of operation.
      */
-    virtual int _operation();
+    virtual int _operation() = 0;
 
 public:
     /**
