@@ -3,6 +3,7 @@
 #include <ThreadPool.hpp>
 
 #include <FibonacciCommand.hpp>
+#include <PrimeNumberCountCommand.hpp>
 
 int main(int argc, char const *argv[])
 {
@@ -28,7 +29,9 @@ int main(int argc, char const *argv[])
     }
 
     std::shared_ptr<Assignment3::FibonacciCommand> pFibCmd = std::make_shared<Assignment3::FibonacciCommand>(30);
+    std::shared_ptr<Assignment3::PrimeNumberCountCommand> pPrimeNumCount = std::make_shared<Assignment3::PrimeNumberCountCommand>(12345678l);
     tp.addCommand(pFibCmd, Assignment3::ThreadPool::HIGH);
+    tp.addCommand(pPrimeNumCount, Assignment3::ThreadPool::LOW);
 
     tp.end();
     return 0;

@@ -10,6 +10,7 @@ set(main_SOURCES
     src/ThreadPool.cpp
     src/WorkerThread.cpp
     src/FibonacciCommand.cpp
+    src/PrimeNumberCountCommand.cpp
     src/main.cpp
 )
 
