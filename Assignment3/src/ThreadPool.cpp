@@ -1,12 +1,12 @@
 #include <ThreadPool.hpp>
-
+#include <ostream>
 namespace Assignment3
 {
 
 ThreadPool::ThreadPool(int num_threads)
-{ 
-    _numThreads = num_threads;
-}
+: _numThreads(num_threads),
+  _state(INIT)
+{ }
 
 
 void ThreadPool::_run()
@@ -77,5 +77,27 @@ void ThreadPool::_setState(State_e state)
     std::lock_guard<std::mutex> lock(_mutex);
     _state = state;
 }
+
+std::ostream& operator<<(std::ostream& os, const Assignment3::ThreadPool::State_e& state)
+{
+    switch (state)
+    {
+    case Assignment3::ThreadPool::INIT:
+        os << "INIT";
+        break;
+    case Assignment3::ThreadPool::READY:
+        os << "READY";
+        break;
+    case Assignment3::ThreadPool::SHUTDOWN:
+        os << "SHUTDOWN";
+        break;
+    default:
+        os << "UNKNOWN";
+        break;
+    }
+
+    return os;
+}
+
 
 } // namespace Assignment3

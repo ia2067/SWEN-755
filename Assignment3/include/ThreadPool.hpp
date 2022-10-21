@@ -56,6 +56,10 @@ private: // state managment
     void _setState(State_e);
 
 };
+
+// Useful global function
+std::ostream& operator<<(std::ostream& os, const ThreadPool::State_e& state);
+
 } // namespace Assignment3
 
 
