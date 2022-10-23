@@ -1,61 +1,59 @@
-#ifndef SYNC_RECEIVER_HPP
-#define SYNC_RECEIVER_HPP
+#ifndef FAULTHANDLE_SERVER_HPP
+#define FAULTHANDLE_SERVER_HPP
 
 #include <core/Thread.hpp>
 #include <core/MessageQueue.hpp>
 
 #include <boost/signals2/signal.hpp>
 
-#include <string>
-#include <mutex>
-#include <boost/serialization/list.hpp>
-
-namespace Sync
+namespace FaultHandle
 {
     class Message;
-    /**
-     * @brief A Sync::Receiver which handles Sync::Sender messages
-     */
-    class Receiver : public Core::Thread
+
+    class Server : public Core::Thread
     {
         public:
             enum State_e {
-                INIT, // This Sync Sender object has been created.
-                CREATING_MQ, // attempting to connect to the messaging queue
+                INIT, 
+                CREATING_MQ,
                 LISTENING,
-                CHECK_VALUES,
                 SHUTDOWN
             };
 
         public:
-            Receiver(std::string);
-            ~Receiver();
+            Server(std::string);
+            ~Server() = default;
 
         public:
             std::string getMessageQueueName();
             State_e getState();
 
-        public:
-            boost::signals2::signal<void (std::list<int>)> RxSignal;
+        public: //signals
+            boost::signals2::signal<void(void)> sigWakeUp;
+            boost::signals2::signal<std::list<int>(void)> sigGetData;
 
         private:
             void _setState(State_e);
-
-        private: //Core::Thread
+        
+        private:
             void _run() override;
+
 
         private:
             std::chrono::milliseconds _init();
             std::chrono::milliseconds _createMQ();
             std::chrono::milliseconds _listen();
-            std::chrono::milliseconds _checkValues();
+
+        private:
+            void _handleGetData();
+            void _handleWakeUp();
 
         private:
             std::mutex _mutex;
             State_e _state;
-            std::list<int> _cacheRxValues;
             std::shared_ptr<Core::MessageQueue<Message>> _pMQ;
     };
-} // namespace Sync
+} // namespace FaultHandle
 
-#endif
+
+#endif //FAULTHANDLE_SERVER_HPP

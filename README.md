@@ -7,6 +7,7 @@
   - [Projects](#projects)
     - [firstCmakeProject](#firstcmakeproject)
     - [Assignment 1](#assignment-1)
+    - [Assignment 2](#assignment-2)
 
 
 # SWEN-755 Software Architecture
@@ -68,3 +69,6 @@ This project implements heartbeat functionality for an autonomous car.
 We implement a sensor process that contains basic functionality such as sampling and finding the rolling average. We implement two sensor processes that contain heartbeat senders, and one heartbeat receiver that listens for the keep-alive from these sensors. If the percent error of the sensors' rolling average is more than 100%, then we consider this as a failure point, and the sensor dies. The heartbeat receiver will then see that one of the sensors is no longer beating. Eventually we would like to see that we can implement fault recovery tactics and have the second sensor become synced up with the primary sensor and if/when the primary sensor fails, the fault monitor or overall controller will switch to listening to the secondary sensor.
 
 Info and source Source can be found [here](Assignment1).
+
+### Assignment 2
+This does something or other relating to Fault Handling. It builds off of Assignment 1 but adds passive redundancy.

@@ -39,6 +39,8 @@ class Sender : public Core::Thread
         std::chrono::milliseconds getSendingInterval();
         void setSendingInterval(std::chrono::milliseconds);
         State_e getState();
+        void pauseBeat();
+        void resumeBeat();
 
     private:
         void _setState(State_e);

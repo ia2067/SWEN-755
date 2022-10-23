@@ -12,6 +12,8 @@
 #include <string>
 #include <mutex>
 
+#include <boost/signals2/signal.hpp>
+
 namespace Heartbeat
 {
 
@@ -51,6 +53,9 @@ namespace Heartbeat
         std::set<std::string> deadIds();
         std::chrono::system_clock::time_point getLastBeat(std::string);
         State_e getState();
+
+    public: //signal
+        boost::signals2::signal<void (std::string)> sigNewDead;
         
 
     private:
@@ -71,6 +76,7 @@ namespace Heartbeat
         std::chrono::milliseconds _checkInterval;
         std::chrono::milliseconds _expiredInterval;
         std::map<std::string, std::chrono::system_clock::time_point> _lastBeats;
+        std::set<std::string> _potentiallyDeadIds;
         std::set<std::string> _deadIds;
         std::shared_ptr<Core::MessageQueue<Message>> _pMQ;
     };

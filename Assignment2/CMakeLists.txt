@@ -6,7 +6,8 @@ include_directories(${PROJECT_SOURCE_DIR}/../common/include)
 set(Assignment2_Libs
     libcore
     libheartbeat
-    libsync)
+    libsync
+    libfaulthandle)
 
 set(sensor_process_exe_name syncedSensorProcess)
 set(sensor_process_SOURCES
@@ -41,6 +42,7 @@ target_include_directories(
 
 set(main_exe_name ${PROJECT_NAME})
 set(main_SOURCES
+    src/FaultMonitor.cpp
     src/main.cpp
 )
 

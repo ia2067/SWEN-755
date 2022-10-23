@@ -10,11 +10,10 @@ namespace utf = boost::unit_test;
 BOOST_AUTO_TEST_CASE(sender)
 {
     const std::string mqn("testMQ1");
-    const std::string sender_id("testSyncSender1");
     
     BOOST_WARN(boost::interprocess::message_queue::remove(mqn.c_str()));
 
-    auto pSyncSend = std::make_shared<Sync::Sender>(sender_id, mqn);
+    auto pSyncSend = std::make_shared<Sync::Sender>(mqn, std::chrono::milliseconds(2000));
     BOOST_CHECK_MESSAGE(pSyncSend->start(), "Failure to start sync sender(1)");
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));

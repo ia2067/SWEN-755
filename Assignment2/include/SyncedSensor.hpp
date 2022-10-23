@@ -8,7 +8,7 @@
 #include <heartbeat/Sender.hpp>
 #include <sync/Sender.hpp>
 #include <sync/Receiver.hpp>
-#include <faulthandle/Sender.hpp>
+#include <faulthandle/Server.hpp>
 
 namespace Assignment2
 {
@@ -50,12 +50,13 @@ public:
      * 
      * @param sample_size (int): Number of samples to average to get measurement.
      * @param scaling_factor (float): Factor to use when scaling sensor measurements.
-     * @param messageQueue (string): String ID for our message queue.
+     * @param hbQueueName (string): String ID for our heartbeat message queue.
+     * @param fhQueueName (string): String ID for our fault handling message queue.
      * @param id (string): String ID for our heartbeat sender.
      * @param syncSender (shared pointer): Shared pointer to the syncSender.
      */
     Sensor(int sample_size, float scaling_factor, 
-           std::string messageQueue, std::string id,
+           std::string hbQueueName, std::string fhQueueName, std::string id,
            std::shared_ptr<Sync::Sender> syncSender);
 
     /**
@@ -63,12 +64,13 @@ public:
      * 
      * @param sample_size (int): Number of samples to average to get measurement.
      * @param scaling_factor (float): Factor to use when scaling sensor measurements.
-     * @param messageQueue (string): String ID for our message queue.
+     * @param hbQueueName (string): String ID for our heartbeat message queue.
+     * @param fhQueueName (string): String ID for our fault handling message queue.
      * @param id (string): String ID for our heartbeat sender.
      * @param syncReceiver (shared pointer): Shared pointer to the syncReceiver.
      */
     Sensor(int sample_size, float scaling_factor, 
-           std::string messageQueue, std::string id,
+           std::string hbQueueName, std::string fhQueueName, std::string id,
            std::shared_ptr<Sync::Receiver> syncReceiver);
 
     /**
@@ -99,6 +101,9 @@ public:
      */
     void handleRxValues(std::list<int> rxValues);
 
+    void handleWakeup();
+    std::list<int> handleGetData();
+
 private:
     // Core::Thread
     /**
@@ -119,6 +124,10 @@ private:
      * 
      */
     void _setState(State_e);
+
+
+    bool _getActive();
+    void _setActive(bool);
 
 private:
     /**
@@ -162,6 +171,13 @@ private:
      * @return std::chrono::milliseconds milliseconds to wait before next state
      */
     std::chrono::milliseconds _failure();
+
+    /**
+     * @brief Fucntion for the dead state
+     *
+     * @return std::chrono::milliseconds milliseoncds to wait before next state
+     */
+    std::chrono::milliseconds _dead();
     
 private:
     /**
@@ -179,7 +195,7 @@ private:
     /* @brief The child thread which is responsible for receiving commands
      * 
      */
-    std::shared_ptr<Heartbeat::Sender> _pHandleServerfault;
+    std::shared_ptr<FaultHandle::Server> _pHandleServerfault;
     /**
      * @brief (optional) The child thread which is responsible for sending out sync messages
      */
@@ -219,6 +235,9 @@ private:
 
     int numRuns;
 
+
+    int _syncCounter;
+    
     /**
      * @brief Whether the sensor should try to activate or go inactive on next state machine tick.
      * NOTE: Intended to syncronize messages incoming on queue to state machine ticks.

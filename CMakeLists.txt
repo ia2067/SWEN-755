@@ -36,6 +36,7 @@ add_subdirectory(common)
 add_subdirectory(firstCmakeProject)
 add_subdirectory(Assignment1)
 add_subdirectory(Assignment2)
+add_subdirectory(Assignment3)
 
 
 option(BUILD_DOC "Build Documentation" ON)

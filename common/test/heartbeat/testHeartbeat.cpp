@@ -1,6 +1,10 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE testHeartbeat
+
+#include <atomic>
+
 #include <boost/test/unit_test.hpp>
+#include <boost/bind/bind.hpp>
 
 #include <heartbeat/Sender.hpp>
 #include <heartbeat/Receiver.hpp>
@@ -89,6 +93,14 @@ BOOST_AUTO_TEST_CASE(full)
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
+    std::atomic<bool> didDie(false);
+    
+    pHBR->sigNewDead.connect([&](std::string id)
+    {
+        if(id.compare(sender_id) == 0)
+            didDie.store(true);
+    });
+
     BOOST_CHECK_MESSAGE(pHBS->end(), "Failed to end Heartbeat sender");
 
     std::this_thread::sleep_for(std::chrono::milliseconds(250));
@@ -96,6 +108,8 @@ BOOST_AUTO_TEST_CASE(full)
     BOOST_CHECK_MESSAGE(pHBR->deadIds().count(sender_id) == 0, "Prematurely dead");
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    BOOST_CHECK_MESSAGE(didDie, "Failure to get signal of dead");
 
     BOOST_CHECK_MESSAGE(pHBR->deadIds().count(sender_id) != 0, "failed to detect dead");
 }

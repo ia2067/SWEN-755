@@ -26,7 +26,7 @@ namespace Sync
             };
 
         public:
-            Sender(std::string, std::string);
+            Sender(std::string, std::chrono::milliseconds);
             ~Sender();
 
         public: 
@@ -51,7 +51,6 @@ namespace Sync
         private:
             std::mutex _mutex;
             State_e _state;
-            std::string _id;
             int _syncSegment;
             std::chrono::milliseconds _sendingInterval;
             std::shared_ptr<Core::MessageQueue<Message>> _pMQ;
