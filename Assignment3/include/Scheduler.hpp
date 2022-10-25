@@ -71,6 +71,10 @@ public:
      */
     virtual std::shared_ptr<Command> getNext() = 0;
 
+    int getNumberLowCommands() {return _lowPriorityQueue.size();}
+    int getNumberHighCommands() {return _highPriorityQueue.size();}
+    int getNumberCommands() {return getNumberLowCommands() + getNumberHighCommands();}
+
 };
 } // namespace Assignment3
 

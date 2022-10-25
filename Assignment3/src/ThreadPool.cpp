@@ -97,6 +97,18 @@ std::vector<std::shared_ptr<Command>> ThreadPool::getFinishedCommands()
     return res;
 }
 
+int ThreadPool::getNumberFinishedCmd()
+{
+    std::lock_guard<std::mutex> lock(_mutex);
+    return _finishedCommands.size();
+}
+
+int ThreadPool::getNumberUnfinishedCmd()
+{
+    std::lock_guard<std::mutex> lock(_mutex);
+    return _scheduler->getNumberCommands();
+}
+
 ThreadPool::State_e ThreadPool::getState()
 {
     return _state;
