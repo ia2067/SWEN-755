@@ -11,6 +11,7 @@ set(main_SOURCES
     src/WorkerThread.cpp
     src/FibonacciCommand.cpp
     src/PrimeNumberCountCommand.cpp
+    src/PiEstimatorCommand.cpp
     src/main.cpp
     src/CircleDetectorCommand.cpp
     src/PurePriorityScheduler.cpp

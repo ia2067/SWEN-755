@@ -9,6 +9,6 @@ namespace Assignment3
 
     double PiEstimatorCommand::_operation()
     {
-        return 4 * (_pointsInCircle / _totalPoints);
+        return 4.0 * (_pointsInCircle / _totalPoints);
     }
 }
