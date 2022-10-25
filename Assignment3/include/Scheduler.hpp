@@ -69,7 +69,7 @@ public:
      * 
      * @return Command to be executed next.
      */
-    virtual std::shared_ptr<Command> getNext() {return NULL;}
+    virtual std::shared_ptr<Command> getNext() = 0;
 
 };
 } // namespace Assignment3

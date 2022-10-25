@@ -1,10 +1,11 @@
 #include <ThreadPool.hpp>
 #include <ostream>
+#include <iostream>
 
 namespace Assignment3
 {
 
-ThreadPool::ThreadPool(int num_threads, Scheduler scheduler)
+ThreadPool::ThreadPool(int num_threads, std::shared_ptr<Scheduler> scheduler)
 : _numThreads(num_threads), _scheduler(scheduler),
   _state(INIT)
 { }

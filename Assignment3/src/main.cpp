@@ -11,9 +11,7 @@ int main(int argc, char const *argv[])
 {
     std::cout << "Assignment 3" << std::endl;
 
-    Assignment3::PurePriorityScheduler scheduler;
-
-    Assignment3::ThreadPool tp(10, scheduler);
+    Assignment3::ThreadPool tp(10, std::make_shared<Assignment3::PurePriorityScheduler>());
     tp.start();
 
     std::cout << "Waiting for threadpool to start";

@@ -22,7 +22,7 @@ public:
     };
 
 public:
-    ThreadPool(int num_threads, Scheduler scheduler);
+    ThreadPool(int num_threads, std::shared_ptr<Scheduler> scheduler);
     virtual ~ThreadPool() = default;
 
 private: //core::thread
@@ -45,7 +45,7 @@ private: // Thread Pooling management
     int _numThreads;
     std::vector<Command> _finishedCommands;
     std::vector<std::shared_ptr<WorkerThread>> _threads;
-    Scheduler _scheduler;
+    std::shared_ptr<Scheduler> _scheduler;
 
 public: // public state management
     State_e getState();
