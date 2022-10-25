@@ -16,7 +16,7 @@ public: // Command
 
 private:
     int _numIterations;
-
+    int getId() {return 2;};
 }; 
 } // namespace Assignment3
 

@@ -30,7 +30,7 @@ public:
 
 public:
     int getResult() {if (_hasRun) return _result;  /* TODO: Else Exception?*/ return -1;}
-
+    int getId() {return -1;}    //  NOTE: Must be overriden to provide new ID.
 
 };
 } // namespace Assignment3

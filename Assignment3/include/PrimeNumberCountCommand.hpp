@@ -16,6 +16,7 @@ public: // Command
 
 private:
     long _maxNumber;
+    int getId() {return 3;};
 };
 
 } // namespace Assignment3

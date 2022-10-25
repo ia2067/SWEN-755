@@ -13,6 +13,9 @@ public:
 
 public: // Command
     double _operation() override;
+    int getId() {return 1;};
+
+    
 
 };
 
