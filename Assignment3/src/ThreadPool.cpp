@@ -1,10 +1,11 @@
 #include <ThreadPool.hpp>
 #include <ostream>
+
 namespace Assignment3
 {
 
-ThreadPool::ThreadPool(int num_threads)
-: _numThreads(num_threads),
+ThreadPool::ThreadPool(int num_threads, Scheduler scheduler)
+: _numThreads(num_threads), _scheduler(scheduler),
   _state(INIT)
 { }
 
@@ -50,20 +51,10 @@ std::chrono::milliseconds ThreadPool::_state_ready()
     return std::chrono::milliseconds(100);
 }
 
-void ThreadPool::addCommand(std::shared_ptr<Command> cmd, Priority_e pri)
+void ThreadPool::addCommand(std::shared_ptr<Command> cmd, Priority::Priority_e pri)
 {
     std::lock_guard<std::mutex> lock(_mutex);
-    switch (pri)
-    {
-        case LOW:
-            _lowPriorityQueue.push(cmd);
-            break;
-        case HIGH:
-            _highPriorityQueue.push(cmd);
-            break;
-        default:
-            break;
-    }
+    _scheduler.addCmd(cmd, pri);
 }
 
 ThreadPool::State_e ThreadPool::getState()

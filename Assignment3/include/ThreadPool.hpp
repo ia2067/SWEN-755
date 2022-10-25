@@ -2,9 +2,11 @@
 #define ASSIGNMENT3_THREADPOOL_HPP
 
 #include <WorkerThread.hpp>
+#include <Scheduler.hpp>
 #include <Command.hpp>
 #include <queue>
 #include <vector>
+
 
 namespace Assignment3
 {
@@ -19,13 +21,8 @@ public:
         SHUTDOWN
     };
 
-    enum Priority_e {
-        LOW,
-        HIGH
-    };
-
 public:
-    ThreadPool(int num_threads);
+    ThreadPool(int num_threads, Scheduler scheduler);
     virtual ~ThreadPool() = default;
 
 private: //core::thread
@@ -41,13 +38,14 @@ private: // members
     std::mutex _mutex;
 
 public: //Command Operations
-    void addCommand(std::shared_ptr<Command> cmd, Priority_e pri);
+    void addCommand(std::shared_ptr<Command> cmd, Priority::Priority_e pri);
+    std::vector<Command> getFinishedCommands();
     
-private:
+private: // Thread Pooling management
     int _numThreads;
-    std::queue<std::shared_ptr<Command>> _lowPriorityQueue;
-    std::queue<std::shared_ptr<Command>> _highPriorityQueue;
+    std::vector<Command> _finishedCommands;
     std::vector<std::shared_ptr<WorkerThread>> _threads;
+    Scheduler _scheduler;
 
 public: // public state management
     State_e getState();

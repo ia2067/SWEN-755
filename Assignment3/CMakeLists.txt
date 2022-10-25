@@ -12,6 +12,8 @@ set(main_SOURCES
     src/FibonacciCommand.cpp
     src/PrimeNumberCountCommand.cpp
     src/main.cpp
+    src/CircleDetectorCommand.cpp
+    src/PurePriorityScheduler.cpp
 )
 
 add_executable(${main_exe_name} ${main_SOURCES})
