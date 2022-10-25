@@ -50,6 +50,8 @@ std::chrono::milliseconds ThreadPool::_state_init()
         t->start();
     }
 
+    _outstandingCmds = 0;
+
     _setState(READY);
     return std::chrono::milliseconds(1);
 }
@@ -65,6 +67,7 @@ std::chrono::milliseconds ThreadPool::_state_ready()
         {
             std::lock_guard<std::mutex> lock(_mutex);
             _finishedCommands.push_back(thread->getFinishedCommand());
+            _outstandingCmds--;
         }
 
         // Any thread that is ready should get the next command.
@@ -81,6 +84,7 @@ void ThreadPool::addCommand(std::shared_ptr<Command> cmd, Priority::Priority_e p
 {
     std::lock_guard<std::mutex> lock(_mutex);
     _scheduler->addCmd(cmd, pri);
+    _outstandingCmds++;
 }
 
 std::vector<std::shared_ptr<Command>> ThreadPool::getFinishedCommands()
@@ -106,7 +110,7 @@ int ThreadPool::getNumberFinishedCmd()
 int ThreadPool::getNumberUnfinishedCmd()
 {
     std::lock_guard<std::mutex> lock(_mutex);
-    return _scheduler->getNumberCommands();
+    return _outstandingCmds;
 }
 
 ThreadPool::State_e ThreadPool::getState()

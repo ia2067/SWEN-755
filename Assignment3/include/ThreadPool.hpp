@@ -45,6 +45,7 @@ public: //Command Operations
     
 private: // Thread Pooling management
     int _numThreads;
+    int _outstandingCmds;
     std::vector<std::shared_ptr<Command>> _finishedCommands;
     std::vector<std::shared_ptr<WorkerThread>> _threads;
     std::shared_ptr<Scheduler> _scheduler;
