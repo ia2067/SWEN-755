@@ -1,4 +1,5 @@
 #include <WorkerThread.hpp>
+#include <iostream>
 
 namespace Assignment3
 {
@@ -17,7 +18,7 @@ void WorkerThread::_run()
 {
     do
     {
-        std::chrono::milliseconds nextSleepTime;
+        std::chrono::milliseconds nextSleepTime = std::chrono::milliseconds(1);
         switch(getState())
         {
         case INIT:
@@ -44,40 +45,65 @@ void WorkerThread::_run()
 std::chrono::milliseconds WorkerThread::_state_init()
 {
     // TODO: Any initialization?
-
     _setState(READY);
-    return std::chrono::milliseconds(100);
+    return std::chrono::milliseconds(1);
 }
 
 std::chrono::milliseconds WorkerThread::_state_execute()
 {
     _cmd->execute();
     _setState(DONE);
-    return std::chrono::milliseconds(100);
+    return std::chrono::milliseconds(1);
 }
 
 void WorkerThread::addCommand(std::shared_ptr<Command> cmd)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
-    
     // If Worker is not ready to process commands then they should be rejected.
     if (getState() == READY)
     {
+        _setState(EXECUTE);
+
+        std::lock_guard<std::mutex> lock(_mutex);
         _cmd = cmd;
     }
     // TODO: Else exception?
 }
 
-int WorkerThread::getResult()
+std::shared_ptr<Command> WorkerThread::getFinishedCommand()
 {
     // Result should only be available if comand has finished. When result is fetched return to waiting for command.
     if (getState() == DONE)
     {
         _setState(READY);
-        return _cmd->getResult();
+        return _cmd;
     }
     //TODO: Exception?
-    return -1;
+    return NULL;
+}
+
+bool WorkerThread::isReady()
+{
+    if (getState() == READY)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
+bool WorkerThread::isDone()
+{
+    if (getState() == DONE)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 WorkerThread::State_e WorkerThread::getState()

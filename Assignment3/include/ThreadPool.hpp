@@ -39,11 +39,11 @@ private: // members
 
 public: //Command Operations
     void addCommand(std::shared_ptr<Command> cmd, Priority::Priority_e pri);
-    std::vector<Command> getFinishedCommands();
+    std::vector<std::shared_ptr<Command>> getFinishedCommands();
     
 private: // Thread Pooling management
     int _numThreads;
-    std::vector<Command> _finishedCommands;
+    std::vector<std::shared_ptr<Command>> _finishedCommands;
     std::vector<std::shared_ptr<WorkerThread>> _threads;
     std::shared_ptr<Scheduler> _scheduler;
 

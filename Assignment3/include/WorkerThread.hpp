@@ -43,7 +43,9 @@ public:
 
 public: //Command Operations
     void addCommand(std::shared_ptr<Command> cmd);
-    int getResult();
+    std::shared_ptr<Command> getFinishedCommand();
+    bool isReady();
+    bool isDone();
 private:
     std::shared_ptr<Command> _cmd;
 

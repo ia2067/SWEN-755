@@ -7,7 +7,7 @@ PurePriorityScheduler::PurePriorityScheduler()
 {
 }
 
-std::shared_ptr<Command>  PurePriorityScheduler::getNext() 
+std::shared_ptr<Command> PurePriorityScheduler::getNext() 
 {
     if (_highPriorityQueue.size() > 0)
     {
@@ -20,7 +20,7 @@ std::shared_ptr<Command>  PurePriorityScheduler::getNext()
     else
     {
         // TODO: Exception?
-        return NULL;
+        return nullptr;
     }
 }
 
