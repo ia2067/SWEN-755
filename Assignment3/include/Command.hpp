@@ -29,7 +29,7 @@ public:
 
 
 public:
-    int getResult() {if (_hasRun) return _result;  /* TODO: Else Exception?*/ return -1;}
+    double getResult() {if (_hasRun) return _result;  /* TODO: Else Exception?*/ return -1;}
     virtual int getId() = 0;    //  NOTE: Must be overriden to provide new ID.
 
 };
