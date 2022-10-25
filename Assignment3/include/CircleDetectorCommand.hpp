@@ -12,7 +12,7 @@ public:
     virtual ~CircleDetectorCommand() = default;
 
 public: // Command
-    int _operation() override;
+    double _operation() override;
 
 };
 

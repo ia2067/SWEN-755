@@ -12,7 +12,7 @@ public:
     virtual ~FibonacciCommand() = default;
 
 public: // Command
-    int _operation() override;
+    double _operation() override;
 
 private:
     int _numIterations;

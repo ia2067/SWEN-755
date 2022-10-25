@@ -12,7 +12,7 @@ public:
     virtual ~PrimeNumberCountCommand() = default;
 
 public: // Command
-    int _operation() override;
+    double _operation() override;
 
 private:
     long _maxNumber;

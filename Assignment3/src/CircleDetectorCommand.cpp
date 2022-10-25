@@ -8,7 +8,7 @@ CircleDetectorCommand::CircleDetectorCommand()
 {
 }
 
-int CircleDetectorCommand::_operation() 
+double CircleDetectorCommand::_operation() 
 {
     // Simulate (x,y) coordinate.
     double x = (rand() / RAND_MAX) - 1;

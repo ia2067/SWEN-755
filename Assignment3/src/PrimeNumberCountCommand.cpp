@@ -6,7 +6,7 @@ namespace Assignment3
 PrimeNumberCountCommand::PrimeNumberCountCommand(long maxNum)
 : _maxNumber(maxNum)
 { }
-int PrimeNumberCountCommand::_operation() 
+double PrimeNumberCountCommand::_operation() 
 {
     int count = 0;
     // crude but meh

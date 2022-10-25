@@ -10,7 +10,7 @@ public:
     virtual ~Command() = default;
 
 private:
-    int _result;    // Stored result of execution.
+    double _result;    // Stored result of execution.
     bool _hasRun;
 
 private: // Interface
@@ -19,7 +19,7 @@ private: // Interface
      * 
      * @result Result of operation.
      */
-    virtual int _operation() = 0;
+    virtual double _operation() = 0;
 
 public:
     /**

@@ -6,7 +6,7 @@ FibonacciCommand::FibonacciCommand(int numIterations)
 : _numIterations(numIterations)
 { }
 
-int FibonacciCommand::_operation()
+double FibonacciCommand::_operation()
 {
     int lastSum = 0;
     int sum = 1;
