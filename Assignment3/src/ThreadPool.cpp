@@ -60,8 +60,6 @@ std::chrono::milliseconds ThreadPool::_state_ready()
 {
     for (std::shared_ptr<WorkerThread> thread : _threads)
     {
-        std::shared_ptr<Command> next = _scheduler->getNext();
-
         // Find finished threads to get result. Will move it to ready.
         if (thread->isDone())
         {
@@ -71,9 +69,13 @@ std::chrono::milliseconds ThreadPool::_state_ready()
         }
 
         // Any thread that is ready should get the next command.
-        if (thread->isReady() && next)
+        if (thread->isReady())
         {
-            thread->addCommand(next);
+            std::shared_ptr<Command> next = _scheduler->getNext();
+            if (next)
+            {
+                thread->addCommand(next);
+            }
         }
     }
 
