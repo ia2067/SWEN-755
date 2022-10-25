@@ -35,7 +35,7 @@ protected: // Helper functions to get next Low/High Priority items.
     }
     std::shared_ptr<Command> getHighPriority() {
         std::shared_ptr<Command> res =_highPriorityQueue.front();
-        _lowPriorityQueue.pop();
+        _highPriorityQueue.pop();
         return res;
     }
 

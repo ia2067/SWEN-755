@@ -11,11 +11,11 @@ std::shared_ptr<Command>  PurePriorityScheduler::getNext()
 {
     if (_highPriorityQueue.size() > 0)
     {
-        return getLowPriority();
+        return getHighPriority();
     }
     else if (_lowPriorityQueue.size() > 0)
     {
-        return getHighPriority();
+        return getLowPriority();
     }
     else
     {
