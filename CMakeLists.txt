@@ -21,8 +21,8 @@ message(STATUS "Is crosscompiling: ${CMAKE_CROSSCOMPILING}")
 message(STATUS "Build System: ${CMAKE_HOST_SYSTEM}")
 message(STATUS "Target System: ${CMAKE_SYSTEM}")
 
-# Define C++11
-set(CMAKE_CXX_STANDARD 11)
+# Define C++14
+set(CMAKE_CXX_STANDARD 14)
 
 #enabled testing
 enable_testing()
