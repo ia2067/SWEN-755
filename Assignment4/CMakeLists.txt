@@ -5,6 +5,7 @@ include_directories(${PROJECT_SOURCE_DIR}/../common/include)
 set(main_exe_name ${PROJECT_NAME})
 set(main_SOURCES
     src/HelloApplication.cpp
+    src/SessionManager.cpp
     src/main.cpp
 )
 
