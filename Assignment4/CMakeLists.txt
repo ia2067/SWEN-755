@@ -4,8 +4,11 @@ include_directories(${PROJECT_SOURCE_DIR}/../common/include)
 
 set(main_exe_name ${PROJECT_NAME})
 set(main_SOURCES
+    src/model/User.cpp
+    src/model/Session.cpp
     src/HelloApplication.cpp
     src/SessionManager.cpp
+    src/AuthApplication.cpp
     src/main.cpp
 )
 
@@ -26,7 +29,9 @@ if(Boost_FOUND)
     target_link_libraries(${main_exe_name}
                           ${Boost_LIBRARIES}
                           wt
-                          wthttp)
+                          wthttp
+                          wtdbo
+                          wtdbosqlite3)
 endif()
 
 
