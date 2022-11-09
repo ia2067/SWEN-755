@@ -8,6 +8,7 @@ set(main_SOURCES
     src/model/Session.cpp
     src/HelloApplication.cpp
     src/SessionManager.cpp
+    src/UserManager.cpp
     src/AuthApplication.cpp
     src/main.cpp
 )
