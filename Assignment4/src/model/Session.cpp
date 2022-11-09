@@ -27,7 +27,7 @@ namespace {
 Session::Session(const std::string& sqliteDb)
 {
     auto connection = std::make_unique<Dbo::backend::Sqlite3>(sqliteDb);
-    connection->setProperty("show-queries", "true");
+    // connection->setProperty("show-queries", "true");
     setConnection(std::move(connection));
 
     mapClass<User>("user");

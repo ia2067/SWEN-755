@@ -8,35 +8,39 @@
 #include "SessionManager.hpp"
 #include "UserManager.hpp"
 
-std::unique_ptr<Wt::WApplication> createApplication(const Wt::WEnvironment &env)
+std::shared_ptr<Assignment4::UserManager> createUserManager() 
 {
-    return std::make_unique<AuthApplication>(env);
-}
+    std::shared_ptr<Assignment4::UserManager> user_man = std::make_shared<Assignment4::UserManager>();
 
-Assignment4::UserManager createUserManager() 
-{
-    Assignment4::UserManager user_man;
-
-    user_man.addUser(Assignment4::User("user1", "user1", "User One", Assignment4::PermissionLevel::NORMAL));
-    user_man.addUser(Assignment4::User("user2", "user2", "User Two", Assignment4::PermissionLevel::ELEVATED));
-    user_man.addUser(Assignment4::User("user3", "user3", "User Three", Assignment4::PermissionLevel::ADMIN));
+    user_man->addUser(Assignment4::User("user1", "user1", "User One", Assignment4::PermissionLevel::NORMAL));
+    user_man->addUser(Assignment4::User("user2", "user2", "User Two", Assignment4::PermissionLevel::ELEVATED));
+    user_man->addUser(Assignment4::User("user3", "user3", "User Three", Assignment4::PermissionLevel::ADMIN));
     
     return user_man;
 }
 
-Assignment4::SessionManager createSessionManager()
+std::shared_ptr<Assignment4::SessionManager> createSessionManager()
 {
-    Assignment4::SessionManager session_man;
+    std::shared_ptr<Assignment4::SessionManager> session_man = std::make_shared<Assignment4::SessionManager>();
 
     return session_man;
+}
+
+std::unique_ptr<Wt::WApplication> createApplication(const Wt::WEnvironment &env)
+{
+
+    std::shared_ptr<Assignment4::UserManager> user_man = createUserManager();
+    std::shared_ptr<Assignment4::SessionManager> session_man = createSessionManager();
+
+
+    return std::make_unique<AuthApplication>(env,
+                                             user_man,
+                                             session_man);
 }
 
 int main(int argc, char *argv[])
 {
     std::cout << "Assignment 4" << std::endl;
-
-    Assignment4::UserManager user_man = createUserManager();
-    Assignment4::SessionManager session_man = createSessionManager();
 
     try {
         Wt::WServer server{argc, argv, WTHTTP_CONFIGURATION};

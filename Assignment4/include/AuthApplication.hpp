@@ -10,18 +10,28 @@
 #include <Wt/Auth/AuthWidget.h>
 #include <Wt/Auth/PasswordService.h>
 
+#include <UserManager.hpp>
+#include <SessionManager.hpp>
 
 #include "model/Session.hpp"
 
 class AuthApplication : public Wt::WApplication
 {
 public:
-    AuthApplication(const Wt::WEnvironment& env);
+    AuthApplication(const Wt::WEnvironment& env,
+                    std::shared_ptr<Assignment4::UserManager> pUserManager,
+                    std::shared_ptr<Assignment4::SessionManager> pSessionManager);
     virtual ~AuthApplication() = default;
 
     void authEvent();
 
-    std::unique_ptr<Wt::WPanel> CreateInitialPanel();
+    std::unique_ptr<Wt::WPanel> CreateStudentPanel();
+    std::unique_ptr<Wt::WPanel> CreateInstructorPanel();
+    std::unique_ptr<Wt::WPanel> CreateAdminPanel();
+
+private:
+    std::shared_ptr<Assignment4::UserManager> _pUserManager;
+    std::shared_ptr<Assignment4::SessionManager> _pSessionManager;
 
 private:
     Session session_;
@@ -31,7 +41,7 @@ private:
     Wt::WText* _pGreeting;
 
 private:
-    std::unique_ptr<Wt::WPanel> _pInitialPanel;
+    Wt::WPanel* _pCurrentPanel;
 };
 
 

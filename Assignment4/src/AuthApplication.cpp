@@ -5,8 +5,12 @@
 #include <Wt/WPushButton.h>
 #include <Wt/WPanel.h>
 
-AuthApplication::AuthApplication(const Wt::WEnvironment& env)
+AuthApplication::AuthApplication(const Wt::WEnvironment& env,
+                                 std::shared_ptr<Assignment4::UserManager> pUserManager,
+                                 std::shared_ptr<Assignment4::SessionManager> pSessionManager)
 : Wt::WApplication(env),
+  _pUserManager(pUserManager),
+  _pSessionManager(pSessionManager),
   session_(appRoot() + "auth.db")
 {
     session_.login().changed().connect(this, &AuthApplication::authEvent);
@@ -28,46 +32,128 @@ AuthApplication::AuthApplication(const Wt::WEnvironment& env)
 
     root()->addWidget(std::move(authWidget));
 
-    _pInitialPanel = CreateInitialPanel();
-
+    instance()->session();
 }
 
 void AuthApplication::authEvent()
 {
     if (session_.login().loggedIn()) {
       const Wt::Auth::User& u = session_.login().user();
-      log("notice")
+      std::cout 
         << "User " << u.id()
         << " (" << u.identity(Wt::Auth::Identity::LoginName) << ")"
-        << " logged in.";
+        << " logged in." << std::endl;
+        std::string username = u.identity(Wt::Auth::Identity::LoginName).toUTF8();
 
-        root()->addWidget(std::move(_pInitialPanel));
+        if(!_pUserManager->checkExist(username))
+        {
+            std::cout << "USER DOESN'T EXIST! ADDING THEM!" << std::endl;
+            Assignment4::User newUser(u.id(), "", username, Assignment4::NORMAL);
+            _pUserManager->addUser(newUser);
+        }
+
+        _pSessionManager->authenticateSession(sessionId(),
+                                              u.id());
+
+        std::unique_ptr<Wt::WPanel> authorized_panel;
+        if(_pUserManager->checkExist(u.id()))
+        {
+            auto user = _pUserManager->fetchUser(u.id());
+            switch (user.getPermLevel())
+            {
+
+            case Assignment4::ELEVATED:
+                authorized_panel = CreateInstructorPanel();
+                break;
+            case Assignment4::ADMIN:
+                authorized_panel = CreateAdminPanel();
+                /* code */
+                break;
+
+            case Assignment4::NORMAL:
+            default: // NOTE: PASSTHROUGH
+                authorized_panel = CreateStudentPanel();
+                break;
+            }
+            _pCurrentPanel = root()->addWidget(std::move(authorized_panel));
+        }
+
     } else
     {
-      log("notice") << "User logged out.";
-      root()->removeWidget(_pInitialPanel.get());
+      std::cout << "User logged out." << std::endl;
+      root()->removeWidget(_pCurrentPanel);
+      _pSessionManager->deauthenticateSession(sessionId());
+      
     }
 
 }
 
-std::unique_ptr<Wt::WPanel> AuthApplication::CreateInitialPanel()
+std::unique_ptr<Wt::WPanel> AuthApplication::CreateStudentPanel()
 {
     auto panelContainer = std::make_unique<Wt::WContainerWidget>();
-    panelContainer->addWidget(std::make_unique<Wt::WText>("Your name, please? "));
+    panelContainer->addWidget(std::make_unique<Wt::WText>("Enter your favorite color: "));
 
     _pNameEdit =  panelContainer->addWidget(std::make_unique<Wt::WLineEdit>());
 
-    Wt::WPushButton *button =  panelContainer->addWidget(std::make_unique<Wt::WPushButton>("Greet me."));
+    Wt::WPushButton *button =  panelContainer->addWidget(std::make_unique<Wt::WPushButton>("Submit"));
     panelContainer->addWidget(std::make_unique<Wt::WBreak>());
     _pGreeting =  panelContainer->addWidget(std::make_unique<Wt::WText>());
 
     auto greet = [this]{
-        _pGreeting->setText("Hello There, " + _pNameEdit->text());
+        _pGreeting->setText("Thank you, " + _pNameEdit->text() + " is a beautiful color!");
     };
     button->clicked().connect(greet);
 
     auto pPanel = std::make_unique<Wt::WPanel>();
-    pPanel->setTitle("My Panel");
+    pPanel->setTitle("Student Panel");
+    pPanel->setCollapsible(true);
+    pPanel->setCentralWidget(std::move(panelContainer));
+
+    return pPanel;
+}
+
+std::unique_ptr<Wt::WPanel> AuthApplication::CreateInstructorPanel()
+{
+    auto panelContainer = std::make_unique<Wt::WContainerWidget>();
+    panelContainer->addWidget(std::make_unique<Wt::WText>("Enter your favorite fruit: "));
+
+    _pNameEdit =  panelContainer->addWidget(std::make_unique<Wt::WLineEdit>());
+
+    Wt::WPushButton *button =  panelContainer->addWidget(std::make_unique<Wt::WPushButton>("Submit"));
+    panelContainer->addWidget(std::make_unique<Wt::WBreak>());
+    _pGreeting =  panelContainer->addWidget(std::make_unique<Wt::WText>());
+
+    auto greet = [this]{
+        _pGreeting->setText("Thank you, " + _pNameEdit->text() + " is a delicious fruit!");
+    };
+    button->clicked().connect(greet);
+
+    auto pPanel = std::make_unique<Wt::WPanel>();
+    pPanel->setTitle("Instructor Panel");
+    pPanel->setCollapsible(true);
+    pPanel->setCentralWidget(std::move(panelContainer));
+
+    return pPanel;
+}
+
+std::unique_ptr<Wt::WPanel> AuthApplication::CreateAdminPanel()
+{
+    auto panelContainer = std::make_unique<Wt::WContainerWidget>();
+    panelContainer->addWidget(std::make_unique<Wt::WText>("Enter your favorite animal: "));
+
+    _pNameEdit =  panelContainer->addWidget(std::make_unique<Wt::WLineEdit>());
+
+    Wt::WPushButton *button =  panelContainer->addWidget(std::make_unique<Wt::WPushButton>("Submit"));
+    panelContainer->addWidget(std::make_unique<Wt::WBreak>());
+    _pGreeting =  panelContainer->addWidget(std::make_unique<Wt::WText>());
+
+    auto greet = [this]{
+        _pGreeting->setText("Thank you, " + _pNameEdit->text() + " is cute, I want one as a pet!");
+    };
+    button->clicked().connect(greet);
+
+    auto pPanel = std::make_unique<Wt::WPanel>();
+    pPanel->setTitle("Admin Panel");
     pPanel->setCollapsible(true);
     pPanel->setCentralWidget(std::move(panelContainer));
 
