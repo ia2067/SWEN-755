@@ -10,7 +10,7 @@ namespace Assignment4
         // Return found user if there was one, otherwise default unauthenticated user.
         if ( i != _session_to_user.end())
         {
-            return i->first;
+            return i->second;
         }
         else
         {
