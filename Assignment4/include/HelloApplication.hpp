@@ -21,6 +21,11 @@ private:
 public:
     HelloApplication(const Wt::WEnvironment& env);
     virtual ~HelloApplication() = default;
+private:
+    std::unique_ptr<Wt::WPanel> CreateInitialPanel();
+    std::unique_ptr<Wt::WPanel> CreateStudentPanel();
+    std::unique_ptr<Wt::WPanel> CreateInstructorPanel();
+    std::unique_ptr<Wt::WPanel> CreateAdminPanel();
 }; 
 
 } // namespace Assignment4

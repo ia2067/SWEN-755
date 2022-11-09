@@ -1,4 +1,6 @@
 #include <iostream>
+#include <stdlib.h>
+#include <time.h>
 
 #include <AuthApplication.hpp>
 #include <HelloApplication.hpp>
