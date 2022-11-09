@@ -54,6 +54,14 @@ class UserManager
         */
         bool checkExist(std::string uname);
 
+        /**
+         * @brief Fetch User object for uname.
+         * 
+         * @param uname (string): Username to fetch.
+         * 
+         * @return (User) User object.
+        */
+       User fetchUser(std::string uname);
 
         /**
          * @brief Get all users registered to be managed.

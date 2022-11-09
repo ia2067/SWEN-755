@@ -1,5 +1,5 @@
-#ifndef ASSIGNMENT4_USER_HPP
-#define ASSIGNMENT4_USER_HPP
+//#ifndef ASSIGNMENT4_USER_HPP
+//#define ASSIGNMENT4_USER_HPP
 
 #include "PermissionLevel.hpp"
 #include <string>
@@ -62,4 +62,4 @@ class User
         void setPermLevel(PermissionLevel perm) { _perm = perm; }
 };
 }
-#endif
+//#endif

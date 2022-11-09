@@ -31,6 +31,11 @@ namespace Assignment4
         return _users.find(uname) != _users.end();
     }
 
+    User UserManager::fetchUser(std::string uname)
+    {
+        return _users.find(uname)->second;
+    }
+
     std::vector<User> UserManager::getAllUsers()
     {
         std::vector<User> res;
