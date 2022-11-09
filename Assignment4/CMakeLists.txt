@@ -33,6 +33,8 @@ if(Boost_FOUND)
                           wthttp
                           wtdbo
                           wtdbosqlite3)
+    #Copy CSS folder
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/css DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 
