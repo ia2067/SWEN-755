@@ -23,7 +23,7 @@ AuthApplication::AuthApplication(const Wt::WEnvironment& env,
     std::unique_ptr<Wt::Auth::AuthWidget> authWidget = 
         std::make_unique<Wt::Auth::AuthWidget>(Session::auth(), session_.users(), session_.login());
 
-    authWidget->model()->addPasswordAuth(&Session::passwordAuth());
+    // authWidget->model()->addPasswordAuth(&Session::passwordAuth());
     authWidget->model()->addOAuth(Session::oAuth());
 
     authWidget->setRegistrationEnabled(true);
@@ -47,8 +47,19 @@ void AuthApplication::authEvent()
 
         if(!_pUserManager->checkExist(username))
         {
+
             std::cout << "USER DOESN'T EXIST! ADDING THEM!" << std::endl;
-            Assignment4::User newUser(u.id(), "", username, Assignment4::NORMAL);
+
+            Assignment4::PermissionLevel auth_level;
+            int uid= std::stoi(u.id());
+            if(uid == 1)
+                auth_level = Assignment4::ADMIN;
+            else if (uid == 2)
+                auth_level = Assignment4::ELEVATED;
+            else
+                auth_level = Assignment4::NORMAL;
+
+            Assignment4::User newUser(u.id(), "", username, auth_level);
             _pUserManager->addUser(newUser);
         }
 
