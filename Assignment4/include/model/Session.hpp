@@ -2,6 +2,7 @@
 #define ASSIGNMENT4_SESSION_HPP
 
 #include <Wt/Auth/Login.h>
+#include <Wt/Auth/RegistrationModel.h>
 #include <Wt/Auth/Dbo/UserDatabase.h>
 
 #include <Wt/Dbo/Session.h>
@@ -33,6 +34,7 @@ public:
 private:
     std::unique_ptr<UserDatabase> _pUsers;
     Wt::Auth::Login _login;
+
 };
 
 #endif 

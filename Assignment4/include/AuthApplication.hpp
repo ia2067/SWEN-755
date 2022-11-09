@@ -5,6 +5,7 @@
 #include <Wt/WBootstrapTheme.h>
 #include <Wt/WContainerWidget.h>
 #include <Wt/WServer.h>
+#include <Wt/WPanel.h>
 
 #include <Wt/Auth/AuthWidget.h>
 #include <Wt/Auth/PasswordService.h>
@@ -20,8 +21,17 @@ public:
 
     void authEvent();
 
+    std::unique_ptr<Wt::WPanel> CreateInitialPanel();
+
 private:
     Session session_;
+
+private:
+    Wt::WLineEdit* _pNameEdit;
+    Wt::WText* _pGreeting;
+
+private:
+    std::unique_ptr<Wt::WPanel> _pInitialPanel;
 };
 
 
