@@ -130,6 +130,7 @@ std::unique_ptr<Wt::WPanel> HelloApplication::CreateAdminPanel()
     pPanel->setCollapsible(true);
     pPanel->setCentralWidget(std::move(panelContainer));
 
+
     return pPanel;
 }
 

@@ -5,6 +5,8 @@
 #include <Wt/WPushButton.h>
 #include <Wt/WPanel.h>
 
+std::string idleJavascript();
+
 AuthApplication::AuthApplication(const Wt::WEnvironment& env,
                                  std::shared_ptr<Assignment4::UserManager> pUserManager,
                                  std::shared_ptr<Assignment4::SessionManager> pSessionManager)
@@ -87,14 +89,15 @@ void AuthApplication::authEvent()
                 break;
             }
             _pCurrentPanel = root()->addWidget(std::move(authorized_panel));
+            root()->doJavaScript(idleJavascript());
         }
 
     } else
     {
       std::cout << "User logged out." << std::endl;
       root()->removeWidget(_pCurrentPanel);
-      _pSessionManager->deauthenticateSession(sessionId());
       
+      _pSessionManager->deauthenticateSession(sessionId());
     }
 
 }
@@ -169,4 +172,91 @@ std::unique_ptr<Wt::WPanel> AuthApplication::CreateAdminPanel()
     pPanel->setCentralWidget(std::move(panelContainer));
 
     return pPanel;
+}
+
+std::string idleJavascript()
+{
+    return R"(
+    var script = document.createElement('script');
+    script.src = 'https://code.jquery.com/jquery-3.6.1.min.js';
+    script.type = 'text/javascript';
+    document.getElementsByTagName('head')[0].appendChild(script);
+
+    function addOverlay() {
+	var elemDiv = document.createElement('div');
+  
+  elemDiv.style.cssText = "display: none; z-index: 2; background: #000; position: fixed; width: 100%; height: 100%; top: 0px;  left: 0px; text-align: center;"; 
+  elemDiv.id = "overlay";
+  document.body.appendChild(elemDiv);
+    
+  var textbox = document.createElement('h1')
+  textbox.style.cssText = "background-color: black; color: white;";
+  textbox.id = "overlay_text";
+  //elemDiv.innerHTML = "<h1 style=\"background-color: black; color: white;\" id=overlay_text> </h1>"
+  elemDiv.appendChild(textbox);
+}
+
+function toggleOverlay(){
+	var overlay = document.getElementById('overlay');
+	overlay.style.opacity = .3;
+	if(overlay.style.display == "block"){
+		overlay.style.display = "none";
+	} else {
+		overlay.style.display = "block";
+	}
+}
+
+function displayOverlay(en) {
+	if (en) {
+  	overlay.style.display = "block";
+  }
+  else {
+  	overlay.style.display = "none";
+  }
+}
+
+function setOverlayText(text) {
+	document.getElementById('overlay_text').innerHTML=text;
+}
+
+var idleTime = 0;
+addOverlay();
+$(document).ready(function () {
+  // Increment the idle time counter every minute.
+  var idleInterval = setInterval(timerIncrement, 1000); // 1 sec
+
+  // Zero the idle timer on mouse movement.
+  $(this).mousemove(function (e) {
+    idleTime = 0;
+  });
+  $(this).keypress(function (e) {
+    idleTime = 0;
+  });
+});
+
+function timerIncrement() {
+  idleTime++;
+
+	warn_time = 7;
+  kill_time = 15;
+
+  
+  if (idleTime < warn_time) {
+    displayOverlay(false);
+    console.log(idleTime)
+  }
+  else if (idleTime < kill_time) { // 10 sec
+    setOverlayText("WARNING: Inactive " + idleTime + " sec. Ending Session at " + kill_time +" sec idle. Move cursor to extend session.")
+    displayOverlay(true);
+    console.log(idleTime)
+  } else {
+    alert("Session Expired due to inactivity.");
+    idleTime = 0;
+    $(".Wt-auth-logged-in > button").click();
+    setOverlayText("");
+    displayOverlay(false);
+    console.log("Session Ended.")
+    clearInterval(idleInterval);
+  }
+})";
 }
